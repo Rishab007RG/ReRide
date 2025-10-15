@@ -5,7 +5,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reride.reride_backend.component.JwtUtil;
 import reride.reride_backend.dto.EmployeeDTO;
+import reride.reride_backend.entity.Branch;
 import reride.reride_backend.entity.Employee;
+import reride.reride_backend.repository.BranchRepo;
 import reride.reride_backend.repository.EmployeeRepo;
 
 import java.util.List;
@@ -22,11 +24,22 @@ public class EmployeeService {
     @Autowired
     JwtUtil jwtUtil;
 
+    @Autowired
+    BranchRepo branchRepo;
+
 
     public Employee addEmployee(Employee employeeData){
         if(employeeRepo.findByEmployeeEmail(employeeData.getEmployeeEmail()).isPresent()){
             throw  new RuntimeException("Employee already exist");
         }
+
+        Branch branch = branchRepo.findById(employeeData.getBranch().getBranchId())
+                .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + employeeData.getBranch().getBranchId()));
+
+        // Fetch AddedBy Employee entity
+        Employee addedBy = employeeRepo.findById(employeeData.getAddedById().getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("AddedBy employee not found with ID: " + employeeData.getAddedById().getEmployeeId()));
+
         Employee employee=new Employee();
         employee.setEmployeeName(employeeData.getEmployeeName());
         employee.setEmployeeEmail(employeeData.getEmployeeEmail());
@@ -34,7 +47,8 @@ public class EmployeeService {
         employee.setEmployeeRole(employeeData.getEmployeeRole());
         String encryptPassword=passwordEncoder.encode(employeeData.getEmployeePassword());
         employee.setEmployeePassword(encryptPassword);
-        employee.setAddedById(employeeData.getAddedById());
+        employee.setBranch(branch);
+        employee.setAddedById(addedBy);
         return employeeRepo.save(employee);
     }
 

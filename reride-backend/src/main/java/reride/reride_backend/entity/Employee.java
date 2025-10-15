@@ -33,6 +33,10 @@ public class Employee {
     @ManyToOne
     private Employee addedById;
 
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
+
     public Long getEmployeeId() {
         return employeeId;
     }
@@ -87,5 +91,13 @@ public class Employee {
 
     public void setAddedById(Employee addedById) {
         this.addedById = addedById;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 }
