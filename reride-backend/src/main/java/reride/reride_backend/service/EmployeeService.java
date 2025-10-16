@@ -1,6 +1,7 @@
 package reride.reride_backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reride.reride_backend.component.JwtUtil;
@@ -10,7 +11,9 @@ import reride.reride_backend.entity.Employee;
 import reride.reride_backend.repository.BranchRepo;
 import reride.reride_backend.repository.EmployeeRepo;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -69,6 +72,38 @@ public class EmployeeService {
                     );
                 })
                 .orElseThrow(() -> new RuntimeException("Employee Login Failed"));
+    }
+
+    public List<EmployeeDTO> getEmployeeService(String authHeader) throws AccessDeniedException {
+        String jwt=authHeader.substring(7);
+        Long employeeId=jwtUtil.extractUserId(jwt);
+        String employeeRole=jwtUtil.extractUserRole(jwt);
+        System.out.println("employeeId: "+employeeId +" employeeRole: "+employeeRole);
+        if (!("SUPER_ADMIN".equalsIgnoreCase(employeeRole) || "ADMIN".equalsIgnoreCase(employeeRole))) {
+            throw new AccessDeniedException("Access denied: Only SUPER_ADMIN and ADMIN can view employee list.");
+        }
+        return employeeRepo.findAll().stream()
+                .map(employee -> new EmployeeDTO(
+                        null,
+                        employee.getEmployeeId(),
+                        employee.getEmployeeName(),
+                        employee.getEmployeePhNo(),
+                        employee.getEmployeeEmail(),
+                        employee.getEmployeeRole(),
+                        employee.getAddedById()
+                )).toList();
+    }
+
+    public Optional<Employee> getEmployeeByIdService(String authHeader, Long employeeId) throws AccessDeniedException {
+        String jwt=authHeader.substring(7);
+        Long employeeIdByToken=jwtUtil.extractUserId(jwt);
+        String employeeRole=jwtUtil.extractUserRole(jwt);
+        System.out.println("employeeId: "+employeeId +" employeeRole: "+employeeRole);
+        Employee employee=employeeRepo.findById(employeeIdByToken).orElseThrow(() -> new RuntimeException("Employee Doesn't exist"));
+        if (!("SUPER_ADMIN".equalsIgnoreCase(employeeRole) || "ADMIN".equalsIgnoreCase(employeeRole))) {
+            throw new AccessDeniedException("Access denied: Only SUPER_ADMIN and ADMIN can view employee list.");
+        }
+        return employeeRepo.findById(employeeId);
     }
 
 }
