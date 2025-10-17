@@ -42,4 +42,10 @@ public class EmployeeController {
         return employeeService.getEmployeeByIdService(authHeader,employeeId);
     }
 
+    @GetMapping("/getDetails")
+    public  ResponseEntity<EmployeeDTO> getEmployeeDetails (@RequestHeader("Authorization") String authHeader) throws AccessDeniedException{
+        EmployeeDTO employee = employeeService.getEmployeeDetails(authHeader);
+        return ResponseEntity.ok(employee);
+    }
+
 }
