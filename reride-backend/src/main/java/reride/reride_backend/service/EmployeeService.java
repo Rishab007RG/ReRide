@@ -2,6 +2,7 @@ package reride.reride_backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reride.reride_backend.component.JwtUtil;
@@ -12,6 +13,7 @@ import reride.reride_backend.repository.BranchRepo;
 import reride.reride_backend.repository.EmployeeRepo;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,4 +111,23 @@ public class EmployeeService {
         return employeeRepo.findById(employeeId);
     }
 
+    public EmployeeDTO getEmployeeDetails(String authHeader) {
+        String jwt=authHeader.substring(7);
+        Long employeeId=jwtUtil.extractUserId(jwt);
+        String employeeRole=jwtUtil.extractUserRole(jwt);
+        System.out.println("employeeId: "+employeeId +" employeeRole: "+employeeRole);
+        Employee employee = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found"));
+
+        EmployeeDTO dto = new EmployeeDTO(
+                null, // token
+                employee.getEmployeeId(),
+                employee.getEmployeeName(),
+                employee.getEmployeePhNo(),
+                employee.getEmployeeEmail(),
+                employee.getEmployeeRole(),
+                null
+        );
+        return dto;
+    }
 }
