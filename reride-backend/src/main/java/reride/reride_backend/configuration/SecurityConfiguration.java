@@ -33,8 +33,8 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/register", "/user/login","/employee/login").permitAll()
-                        .requestMatchers("/employee/**").hasAnyRole("SUPER_ADMIN","ADMIN", "STAFF")
+                        .requestMatchers("/user/register", "/user/login","/employee/login","/superAdminRegister","employee/addEmployee").permitAll()
+//                        .requestMatchers("/employee/**").hasAnyRole("SUPER_ADMIN","ADMIN", "STAFF")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //This means each device/browser manages its own token, so multiple users can log in on different devices simultaneously with no conflict

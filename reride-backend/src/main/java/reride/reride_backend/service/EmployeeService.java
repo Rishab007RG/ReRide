@@ -31,7 +31,10 @@ public class EmployeeService {
     BranchRepo branchRepo;
 
 
-    public Employee addEmployee(Employee employeeData){
+    public Employee addEmployee(String authHeader,Employee employeeData){
+        String token = authHeader.substring(7);
+        Long employeeId=jwtUtil.extractUserId(token);
+        String employeeRole=jwtUtil.extractUserRole(token);
         if(employeeRepo.findByEmployeeEmail(employeeData.getEmployeeEmail()).isPresent()){
             throw  new RuntimeException("Employee already exist");
         }
@@ -40,8 +43,8 @@ public class EmployeeService {
                 .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + employeeData.getBranch().getBranchId()));
 
         // Fetch AddedBy Employee entity
-        Employee addedBy = employeeRepo.findById(employeeData.getAddedById().getEmployeeId())
-                .orElseThrow(() -> new RuntimeException("AddedBy employee not found with ID: " + employeeData.getAddedById().getEmployeeId()));
+        Employee addedBy = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("AddedBy employee not found with ID: " + employeeId));
 
         Employee employee=new Employee();
         employee.setEmployeeName(employeeData.getEmployeeName());

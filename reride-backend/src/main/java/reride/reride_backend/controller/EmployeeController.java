@@ -26,8 +26,8 @@ public class EmployeeController {
     }
 
     @PostMapping("/addEmployee")
-    public ResponseEntity<String > addEmployee(@RequestBody Employee employeeData){
-        employeeService.addEmployee(employeeData);
+    public ResponseEntity<String > addEmployee(@RequestHeader("Authorization") String authHeader, @RequestBody Employee employeeData){
+        employeeService.addEmployee(authHeader,employeeData);
         return ResponseEntity.ok("Employee Successfully added");
     }
 
