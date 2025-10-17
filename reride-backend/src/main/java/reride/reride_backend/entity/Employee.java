@@ -34,7 +34,7 @@ public class Employee {
     private Employee addedById;
 
     @ManyToOne
-    @JoinColumn(name = "branch_id")
+    @JoinColumn(name = "branch_id",nullable = true)  //<- make it false after adding the super admin
     private Branch branch;
 
     public Long getEmployeeId() {
