@@ -9,6 +9,7 @@ import reride.reride_backend.component.JwtUtil;
 import reride.reride_backend.dto.EmployeeDTO;
 import reride.reride_backend.entity.Branch;
 import reride.reride_backend.entity.Employee;
+import reride.reride_backend.enums.Role;
 import reride.reride_backend.repository.BranchRepo;
 import reride.reride_backend.repository.EmployeeRepo;
 
@@ -41,8 +42,18 @@ public class EmployeeService {
             throw  new RuntimeException("Employee already exist");
         }
 
-        Branch branch = branchRepo.findById(employeeData.getBranch().getBranchId())
-                .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + employeeData.getBranch().getBranchId()));
+        Branch branch = null;
+
+        if (employeeData.getEmployeeRole() != Role.SUPER_ADMIN) {
+            if (employeeData.getBranch() == null || employeeData.getBranch().getBranchId() == null) {
+                throw new IllegalArgumentException("Branch information is required for ADMIN and STAFF.");
+            }
+            branch = branchRepo.findById(employeeData.getBranch().getBranchId())
+                    .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + employeeData.getBranch().getBranchId()));
+        }
+
+//        Branch branch = branchRepo.findById(employeeData.getBranch().getBranchId())
+//                .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + employeeData.getBranch().getBranchId()));
 
         // Fetch AddedBy Employee entity
         Employee addedBy = employeeRepo.findById(employeeId)

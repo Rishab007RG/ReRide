@@ -42,6 +42,7 @@ public class Vehicle {
     @JoinColumn(name = "inspection_id",referencedColumnName = "inspectionId")
     private Inspection inspection;
 
+//private String vehicleBoughtPrice;//future
 
     private String vehicleOutLetPrice;
     private String vehicleAvailability; //(Sold/notSold)
