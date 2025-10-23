@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import reride.reride_backend.component.JwtUtil;
 import reride.reride_backend.entity.Inspection;
 import reride.reride_backend.entity.User;
 import reride.reride_backend.entity.Vehicle;
@@ -31,6 +32,9 @@ public class VehicleService {
 
     @Autowired
     InspectionRepo inspectionRepo;
+
+    @Autowired
+    JwtUtil jwtUtil;
 
     public Vehicle addVehicle(Vehicle vehicle){
         return  vehicleRepository.save(vehicle);
@@ -104,6 +108,159 @@ public class VehicleService {
 
     public Optional<Vehicle> getVehicleById(Long vehicleId){
         return vehicleRepository.findById(vehicleId);
+    }
+
+    public ResponseEntity<Vehicle> updateVehicleAndUser(
+            String authHeader,
+            Long vehicleId,
+            Vehicle vehicleData,
+            User userData,
+            Inspection inspectionData,
+            MultipartFile[] documents) throws IOException {
+
+        // Extract role and ID from token
+        String token = authHeader.substring(7);
+        Long employeeId = jwtUtil.extractUserId(token);
+        String employeeRole = jwtUtil.extractUserRole(token);
+
+        // Fetch existing vehicle
+        Vehicle existingVehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found with ID: " + vehicleId));
+
+        // Role-based logic
+        if (employeeRole.equals("ADMIN")) {
+            // Admin can update vehicle fields (except branch if restricted)
+            updateVehicleFields(existingVehicle, vehicleData, false);
+
+            // Update user fields — never create a new user
+            User existingUser = existingVehicle.getUser();
+            if (existingUser != null && userData != null) {
+                if (userData.getUserName() != null) existingUser.setUserName(userData.getUserName());
+                if (userData.getUserEmail() != null) existingUser.setUserEmail(userData.getUserEmail());
+                if (userData.getUserPhoneNo() != null) existingUser.setUserPhoneNo(userData.getUserPhoneNo());
+                // Role remains unchanged
+                userRepository.save(existingUser);  // save updates
+            }
+
+            // Update inspection if provided
+            if (inspectionData != null) {
+                updateInspection(existingVehicle, inspectionData);
+            }
+
+        } else if (employeeRole.equals("STAFF")) {
+            // Staff can ONLY update inspection
+            if (inspectionData == null)
+                throw new RuntimeException("Inspection data is required for STAFF.");
+            updateInspection(existingVehicle, inspectionData);
+
+        } else {
+            throw new RuntimeException("Access denied: Only ADMIN or STAFF can perform this action.");
+        }
+
+        // Handle file uploads
+        if (documents != null && documents.length > 0) {
+            handleFileUploads(existingVehicle, documents);
+        }
+
+        // Save and return
+        Vehicle updatedVehicle = vehicleRepository.save(existingVehicle);
+        return ResponseEntity.ok(updatedVehicle);
+    }
+
+    private void updateVehicleFields(Vehicle existing, Vehicle updated, boolean allowBranchUpdate) {
+        if (updated == null) return;
+
+        if (updated.getVehicleBrand() != null) existing.setVehicleBrand(updated.getVehicleBrand());
+        if (updated.getVehicleModel() != null) existing.setVehicleModel(updated.getVehicleModel());
+        if (updated.getVehicleModelYear() != null) existing.setVehicleModelYear(updated.getVehicleModelYear());
+        if (updated.getVehicleColour() != null) existing.setVehicleColour(updated.getVehicleColour());
+        if (updated.getVehiclePurchasedDate() != null) existing.setVehiclePurchasedDate(updated.getVehiclePurchasedDate());
+        if (updated.getVehiclePurchasedAmount() != null) existing.setVehiclePurchasedAmount(updated.getVehiclePurchasedAmount());
+        if (updated.getVehicleOwnerType() != null) existing.setVehicleOwnerType(updated.getVehicleOwnerType());
+        if (updated.getVehicleRegisterNumber() != null) existing.setVehicleRegisterNumber(updated.getVehicleRegisterNumber());
+        if (allowBranchUpdate && updated.getVehicleInspectionBranch() != null)
+            existing.setVehicleInspectionBranch(updated.getVehicleInspectionBranch());
+        if (updated.getVehicleInspectionDate() != null) existing.setVehicleInspectionDate(updated.getVehicleInspectionDate());
+
+        // Newly added fields
+        if (updated.getVehicleOutLetPrice() != null) existing.setVehicleOutLetPrice(updated.getVehicleOutLetPrice());
+        if (updated.getVehicleAvailability() != null) existing.setVehicleAvailability(updated.getVehicleAvailability());
+        if (updated.getVehicleSoldDate() != null) existing.setVehicleSoldDate(updated.getVehicleSoldDate());
+        if (updated.getExecutiveName() != null) existing.setExecutiveName(updated.getExecutiveName());
+        if (updated.getVehicleSellingPrice() != null) existing.setVehicleSellingPrice(updated.getVehicleSellingPrice());
+        if (updated.getCustomerName() != null) existing.setCustomerName(updated.getCustomerName());
+        if (updated.getCustomerPhNo() != null) existing.setCustomerPhNo(updated.getCustomerPhNo());
+        if (updated.getDocumentsGiven() != null) existing.setDocumentsGiven(updated.getDocumentsGiven());
+    }
+
+    private void updateInspection(Vehicle vehicle, Inspection inspectionData) {
+        if (inspectionData == null) return;
+
+        Inspection existingInspection = vehicle.getInspection();
+        if (existingInspection == null) {
+            Inspection newIns = inspectionRepo.save(inspectionData);
+            vehicle.setInspection(newIns);
+            return;
+        }
+
+        // Update only non-null fields
+        if (inspectionData.getVehicleCondition() != null)
+            existingInspection.setVehicleCondition(inspectionData.getVehicleCondition());
+        if (inspectionData.getVehicleKmsActual() != null)
+            existingInspection.setVehicleKmsActual(inspectionData.getVehicleKmsActual());
+        if (inspectionData.getVehicleKmsCorrected() != null)
+            existingInspection.setVehicleKmsCorrected(inspectionData.getVehicleKmsCorrected());
+        if (inspectionData.getVehicleCleaning() != null)
+            existingInspection.setVehicleCleaning(inspectionData.getVehicleCleaning());
+        if (inspectionData.getVehicleBatteryCondition() != null)
+            existingInspection.setVehicleBatteryCondition(inspectionData.getVehicleBatteryCondition());
+        if (inspectionData.getVehicleBatteryConditionRemarks() != null)
+            existingInspection.setVehicleBatteryConditionRemarks(inspectionData.getVehicleBatteryConditionRemarks());
+        if (inspectionData.getVehicleTyreCondition() != null)
+            existingInspection.setVehicleTyreCondition(inspectionData.getVehicleTyreCondition());
+        if (inspectionData.getVehicleTyreConditionRemarks() != null)
+            existingInspection.setVehicleTyreConditionRemarks(inspectionData.getVehicleTyreConditionRemarks());
+        if (inspectionData.getVehicleEngineCondition() != null)
+            existingInspection.setVehicleEngineCondition(inspectionData.getVehicleEngineCondition());
+        if (inspectionData.getVehicleEngineConditionRemarks() != null)
+            existingInspection.setVehicleEngineConditionRemarks(inspectionData.getVehicleEngineConditionRemarks());
+        if (inspectionData.getVehicleSeatCondition() != null)
+            existingInspection.setVehicleSeatCondition(inspectionData.getVehicleSeatCondition());
+        if (inspectionData.getVehicleSeatConditionRemarks() != null)
+            existingInspection.setVehicleSeatConditionRemarks(inspectionData.getVehicleSeatConditionRemarks());
+        if (inspectionData.getVehiclePaintCondition() != null)
+            existingInspection.setVehiclePaintCondition(inspectionData.getVehiclePaintCondition());
+        if (inspectionData.getVehiclePaintConditionRemarks() != null)
+            existingInspection.setVehiclePaintConditionRemarks(inspectionData.getVehiclePaintConditionRemarks());
+        if (inspectionData.getVehicleFinalInspection() != null)
+            existingInspection.setVehicleFinalInspection(inspectionData.getVehicleFinalInspection());
+
+        inspectionRepo.save(existingInspection);
+    }
+
+    private void handleFileUploads(Vehicle vehicle, MultipartFile[] documents) throws IOException {
+        String uploadDirPath = System.getProperty("user.dir") + File.separator + "uploads";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists()) uploadDir.mkdirs();
+
+        List<String> filePaths = new ArrayList<>();
+        for (MultipartFile doc : documents) {
+            if (doc == null || doc.isEmpty()) continue;
+            String name = System.currentTimeMillis() + "_" + doc.getOriginalFilename();
+            File destFile = new File(uploadDir, name);
+            doc.transferTo(destFile);
+            filePaths.add(name);
+        }
+
+        if (!filePaths.isEmpty()) {
+            List<String> existing = new ArrayList<>();
+            try {
+                if (vehicle.getVehicleImage() != null)
+                    existing = objectMapper.readValue(vehicle.getVehicleImage(), List.class);
+            } catch (Exception ignored) {}
+            existing.addAll(filePaths);
+            vehicle.setVehicleImage(objectMapper.writeValueAsString(existing));
+        }
     }
 }
 

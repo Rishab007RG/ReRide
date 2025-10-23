@@ -164,5 +164,69 @@ public class Vehicle {
     public void setVehicleInspectionDate(LocalDate vehicleInspectionDate) {
         this.vehicleInspectionDate = vehicleInspectionDate;
     }
+
+    public String getVehicleOutLetPrice() {
+        return vehicleOutLetPrice;
+    }
+
+    public void setVehicleOutLetPrice(String vehicleOutLetPrice) {
+        this.vehicleOutLetPrice = vehicleOutLetPrice;
+    }
+
+    public String getVehicleAvailability() {
+        return vehicleAvailability;
+    }
+
+    public void setVehicleAvailability(String vehicleAvailability) {
+        this.vehicleAvailability = vehicleAvailability;
+    }
+
+    public Date getVehicleSoldDate() {
+        return vehicleSoldDate;
+    }
+
+    public void setVehicleSoldDate(Date vehicleSoldDate) {
+        this.vehicleSoldDate = vehicleSoldDate;
+    }
+
+    public String getVehicleSellingPrice() {
+        return vehicleSellingPrice;
+    }
+
+    public void setVehicleSellingPrice(String vehicleSellingPrice) {
+        this.vehicleSellingPrice = vehicleSellingPrice;
+    }
+
+    public String getExecutiveName() {
+        return executiveName;
+    }
+
+    public void setExecutiveName(String executiveName) {
+        this.executiveName = executiveName;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerPhNo() {
+        return customerPhNo;
+    }
+
+    public void setCustomerPhNo(String customerPhNo) {
+        this.customerPhNo = customerPhNo;
+    }
+
+    public String getDocumentsGiven() {
+        return documentsGiven;
+    }
+
+    public void setDocumentsGiven(String documentsGiven) {
+        this.documentsGiven = documentsGiven;
+    }
 }
 

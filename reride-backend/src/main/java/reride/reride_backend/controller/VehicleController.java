@@ -67,5 +67,28 @@ public class VehicleController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping(value = "/updateVehicle/{vehicleId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateVehicleWithImg(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long vehicleId,
+            @RequestPart("vehicle") String vehicleJson,
+            @RequestPart("user") String userJson,
+            @RequestPart("inspection") String inspectionJson,
+            @RequestPart(value = "documents", required = false) MultipartFile[] documents
+    ) throws IOException {
+
+        System.out.println("Inside VehicleController → updateVehicleWithImg()");
+
+        // Convert incoming JSON strings to Java objects
+        Vehicle vehicle = objectMapper.readValue(vehicleJson, Vehicle.class);
+        User user = objectMapper.readValue(userJson, User.class);
+        Inspection inspection = objectMapper.readValue(inspectionJson, Inspection.class);
+
+        // Call service method (role-based logic happens inside)
+        vehicleService.updateVehicleAndUser(authHeader, vehicleId, vehicle, user, inspection, documents);
+
+        return ResponseEntity.ok("Vehicle details updated successfully");
+    }
+
 }
 
