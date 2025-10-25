@@ -25,6 +25,7 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    // Where admin can add staff and admin
     @PostMapping("/addEmployee")
     public ResponseEntity<String> addEmployee(
             @RequestHeader("Authorization") String authHeader,
@@ -38,13 +39,14 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/addAdmin/{branchId}")
-    public ResponseEntity<String> addAdmin(
+    //Where super admin can add admin
+    @PostMapping("/addEmployee/{branchId}")
+    public ResponseEntity<String> addEmployeeToBranch(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Long branchId,
             @RequestBody Employee employeeData) throws AccessDeniedException {
 
-        employeeService.addAdminToBranch(authHeader, branchId, employeeData);
+        employeeService.addEmployeeToBranchService(authHeader, branchId, employeeData);
         return ResponseEntity.ok("Admin added successfully");
     }
 
@@ -54,23 +56,30 @@ public class EmployeeController {
         return ResponseEntity.ok(employee);
     }
 
+
     @GetMapping("/getEmployee/{employeeId}")
     public Optional<Employee> getEmployeeById(@RequestHeader("Authorization") String authHeader, @PathVariable Long employeeId) throws AccessDeniedException {
         return employeeService.getEmployeeByIdService(authHeader,employeeId);
     }
 
+    //To fetch particular logged in person details
     @GetMapping("/getDetails")
     public  ResponseEntity<EmployeeDTO> getEmployeeDetails (@RequestHeader("Authorization") String authHeader) throws AccessDeniedException{
         EmployeeDTO employee = employeeService.getEmployeeDetails(authHeader);
         return ResponseEntity.ok(employee);
     }
 
+    //super admin can fetch the employee for a particular branch
+    //admin can fetch both admin and staff of the particular branch
     @GetMapping("/getEmployeeByBranchId/{branchId}")
     public List<Employee> getEmployeeByBranchId(@RequestHeader("Authorization") String authHeader,@PathVariable Long branchId) throws AccessDeniedException {
         List<Employee> employee=employeeService.getEmployeeByBranchIdService(authHeader,branchId);
         return employee;
     }
 
+
+    //Super admin can update admin
+    //Admin can update both admin and staff
     @PutMapping("/updateEmployee/{employeeId}")
     public ResponseEntity<String> updateEmployee(
             @RequestHeader("Authorization") String authHeader,
@@ -80,6 +89,8 @@ public class EmployeeController {
         return ResponseEntity.ok("Employee updated successfully");
     }
 
+    //Super admin can delete admin
+    //Admin can delete both admin and staff
     @DeleteMapping("/deleteEmployee/{employeeId}")
     public ResponseEntity<String> deleteEmployee(
             @RequestHeader("Authorization") String authHeader,

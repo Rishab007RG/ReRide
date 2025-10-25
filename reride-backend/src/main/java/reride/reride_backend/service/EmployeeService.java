@@ -48,10 +48,6 @@ public class EmployeeService {
             throw new AccessDeniedException("Only ADMIN can add employees using this endpoint.");
         }
 
-        // ADMIN can only add STAFF
-        if (employeeData.getEmployeeRole() != Role.STAFF) {
-            throw new AccessDeniedException("ADMIN can only add STAFF.");
-        }
 
         // Ensure ADMIN has a branch assigned
         Branch branch = Optional.ofNullable(requester.getBranch())
@@ -75,7 +71,7 @@ public class EmployeeService {
         return employeeRepo.save(employee);
     }
 
-    public Employee addAdminToBranch(String authHeader, Long branchId, Employee employeeData) throws AccessDeniedException {
+    public Employee addEmployeeToBranchService(String authHeader, Long branchId, Employee employeeData) throws AccessDeniedException {
         String token = authHeader.substring(7);
         Long requesterId = jwtUtil.extractUserId(token);
         String requesterRole = jwtUtil.extractUserRole(token);
@@ -136,7 +132,7 @@ public class EmployeeService {
         Long employeeId=jwtUtil.extractUserId(jwt);
         String employeeRole=jwtUtil.extractUserRole(jwt);
         System.out.println("employeeId: "+employeeId +" employeeRole: "+employeeRole);
-        if (!("SUPER_ADMIN".equalsIgnoreCase(employeeRole) || "ADMIN".equalsIgnoreCase(employeeRole))) {
+        if (!("ADMIN".equalsIgnoreCase(employeeRole))) {
             throw new AccessDeniedException("Access denied: Only SUPER_ADMIN and ADMIN can view employee list.");
         }
         return employeeRepo.findAll().stream()
@@ -195,7 +191,18 @@ public class EmployeeService {
             throw new AccessDeniedException("Access denied: Only SUPER_ADMIN and ADMIN can view employee list.");
         }
 
-        return employeeRepo.findByBranch_BranchId(branchId);
+        // SUPER_ADMIN -> Fetch only ADMINs under that branch
+        if ("SUPER_ADMIN".equalsIgnoreCase(employeeRole)) {
+            return employeeRepo.findByBranch_BranchIdAndRole(branchId);
+        }
+
+        // ADMIN -> Fetch all employees in their own branch
+        else if ("ADMIN".equalsIgnoreCase(employeeRole)) {
+            return employeeRepo.findByBranch_BranchId(branchId);
+        }
+
+        // Fallback (should not reach here)
+        throw new AccessDeniedException("Unauthorized access.");
     }
 
     public Employee updateEmployeeService(String authHeader, Long employeeId, Employee updatedData)
@@ -216,7 +223,7 @@ public class EmployeeService {
                 throw new AccessDeniedException("SUPER_ADMIN can only update ADMIN employees.");
             }
         } else if ("ADMIN".equalsIgnoreCase(requesterRole)) {
-            if (existing.getEmployeeRole() != Role.STAFF) {
+            if (existing.getEmployeeRole() != Role.STAFF && existing.getEmployeeRole()!=Role.ADMIN) {
                 throw new AccessDeniedException("ADMIN can only update STAFF employees.");
             }
             if (!existing.getBranch().getBranchId().equals(requester.getBranch().getBranchId())) {
@@ -250,6 +257,9 @@ public class EmployeeService {
         Employee target = employeeRepo.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
 
+        if(requesterId==employeeId){
+            throw new RuntimeException("Self deletion is not allowed");
+        }
         // --- Role-based logic ---
         if ("SUPER_ADMIN".equalsIgnoreCase(requesterRole)) {
             if (target.getEmployeeRole() != Role.ADMIN) {

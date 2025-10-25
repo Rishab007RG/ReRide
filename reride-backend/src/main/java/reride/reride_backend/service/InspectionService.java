@@ -4,7 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import reride.reride_backend.component.JwtUtil;
+import reride.reride_backend.entity.Employee;
 import reride.reride_backend.entity.Inspection;
+import reride.reride_backend.enums.InspectionStatus;
+import reride.reride_backend.enums.Role;
+import reride.reride_backend.repository.EmployeeRepo;
 import reride.reride_backend.repository.InspectionRepo;
 
 import java.util.List;
@@ -17,6 +21,9 @@ public class InspectionService {
 
     @Autowired
     JwtUtil jwtUtil;
+
+    @Autowired
+    EmployeeRepo employeeRepo;
 
     public Inspection addInspection(Inspection inspection){
         return inspectionRepo.save(inspection);
@@ -68,6 +75,22 @@ public class InspectionService {
         existingInspection.setVehicleFinalInspection(inspection.getVehicleFinalInspection());
 
         return inspectionRepo.save(existingInspection);
+    }
+
+    //Update inspection status
+    public Inspection updateInspectionStatus(String authHeader,Inspection inspectionForm, Long inspectionId, InspectionStatus status) {
+        String token=authHeader.substring(7);
+        Long employeeId=jwtUtil.extractUserId(token);
+        String role=jwtUtil.extractUserRole(token);
+
+        Employee employee=employeeRepo.findById(employeeId)
+                .orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
+        Inspection inspection = inspectionRepo.findById(inspectionId)
+                .orElseThrow(() -> new RuntimeException("Inspection not found with ID: " + inspectionId));
+
+        inspection.setInspectionStatus(status);
+        inspection.setInspectionDate(inspectionForm.getInspectionDate());
+        return inspectionRepo.save(inspection);
     }
 
 }

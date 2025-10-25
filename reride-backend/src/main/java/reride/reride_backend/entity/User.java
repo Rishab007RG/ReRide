@@ -1,5 +1,6 @@
 package reride.reride_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import reride.reride_backend.enums.Role;
 
@@ -22,6 +23,7 @@ public class User {
     private Role userRole;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Vehicle> vehicles;
 
 
@@ -72,5 +74,7 @@ public class User {
     public void setVehicles(List<Vehicle> vehicles) {
         this.vehicles = vehicles;
     }
+
+
 }
 

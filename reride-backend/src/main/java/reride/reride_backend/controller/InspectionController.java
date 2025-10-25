@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reride.reride_backend.entity.Inspection;
+import reride.reride_backend.enums.InspectionStatus;
 import reride.reride_backend.service.InspectionService;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class InspectionController {
 
 
     @PostMapping("/addInspection")
-    public ResponseEntity<Inspection> addUsers(@RequestBody Inspection inspection){
+    public ResponseEntity<Inspection> addInspection(@RequestBody Inspection inspection){
         return ResponseEntity.ok(inspectionService.addInspection(inspection));
     }
 
@@ -37,6 +38,17 @@ public class InspectionController {
     @PutMapping("/updateInspection/{inspectionId}")
     public ResponseEntity<Inspection> updateInspection(@RequestHeader("Authorization") String authHeader, @RequestBody Inspection inspection, @PathVariable Long inspectionId){
         return ResponseEntity.ok(inspectionService.updateInspectionService(authHeader, inspection, inspectionId));
+    }
+
+    @PutMapping("updateInspectionStatus/{inspectionId}/status")
+    public ResponseEntity<Inspection> updateInspectionStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody Inspection inspection,
+            @PathVariable Long inspectionId,
+            @RequestParam InspectionStatus status) {
+
+        Inspection updated = inspectionService.updateInspectionStatus(authHeader,inspection,inspectionId, status);
+        return ResponseEntity.ok(updated);
     }
 }
 

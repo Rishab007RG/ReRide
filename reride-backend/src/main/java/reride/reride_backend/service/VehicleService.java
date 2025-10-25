@@ -191,6 +191,8 @@ public class VehicleService {
         if (updated.getCustomerName() != null) existing.setCustomerName(updated.getCustomerName());
         if (updated.getCustomerPhNo() != null) existing.setCustomerPhNo(updated.getCustomerPhNo());
         if (updated.getDocumentsGiven() != null) existing.setDocumentsGiven(updated.getDocumentsGiven());
+
+        if(updated.getWebsiteVisibility()!=null) existing.setWebsiteVisibility(updated.getWebsiteVisibility());
     }
 
     private void updateInspection(Vehicle vehicle, Inspection inspectionData) {

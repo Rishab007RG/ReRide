@@ -1,7 +1,11 @@
 package reride.reride_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import reride.reride_backend.enums.InspectionStatus;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -32,8 +36,14 @@ public class Inspection {
     private String vehicleTeflonCoating;//(ok/notOk)
     private String vehicleFinalInspection;//(ok/notOk)
 
+    private LocalDate inspectionDate;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private InspectionStatus inspectionStatus=InspectionStatus.PROCESSING;
+
 
     @OneToOne(mappedBy = "inspection", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Vehicle vehicles;
 
     public Long getInspectionId() {
@@ -202,5 +212,29 @@ public class Inspection {
 
     public void setVehicleFinalInspection(String vehicleFinalInspection) {
         this.vehicleFinalInspection = vehicleFinalInspection;
+    }
+
+    public InspectionStatus getInspectionStatus() {
+        return inspectionStatus;
+    }
+
+    public void setInspectionStatus(InspectionStatus inspectionStatus) {
+        this.inspectionStatus = inspectionStatus;
+    }
+
+    public Vehicle getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(Vehicle vehicles) {
+        this.vehicles = vehicles;
+    }
+
+    public LocalDate getInspectionDate() {
+        return inspectionDate;
+    }
+
+    public void setInspectionDate(LocalDate inspectionDate) {
+        this.inspectionDate = inspectionDate;
     }
 }

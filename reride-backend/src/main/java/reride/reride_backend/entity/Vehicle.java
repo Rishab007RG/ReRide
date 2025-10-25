@@ -1,6 +1,7 @@
 package reride.reride_backend.entity;
 
 import jakarta.persistence.*;
+import reride.reride_backend.enums.WebsiteVisibility;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -33,6 +34,10 @@ public class Vehicle {
     private String vehicleInspectionBranch;
     @Column(nullable = false)
     private LocalDate vehicleInspectionDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private WebsiteVisibility websiteVisibility=WebsiteVisibility.NOT_VISIBLE;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
@@ -227,6 +232,14 @@ public class Vehicle {
 
     public void setDocumentsGiven(String documentsGiven) {
         this.documentsGiven = documentsGiven;
+    }
+
+    public WebsiteVisibility getWebsiteVisibility() {
+        return websiteVisibility;
+    }
+
+    public void setWebsiteVisibility(WebsiteVisibility websiteVisibility) {
+        this.websiteVisibility = websiteVisibility;
     }
 }
 

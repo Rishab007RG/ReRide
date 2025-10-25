@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/vehicle")
+@RequestMapping("vehicle")
 @CrossOrigin(origins = {"http://localhost:5501", "http://127.0.0.1:5501"})
 
 public class VehicleController {
@@ -55,18 +55,19 @@ public class VehicleController {
     }
 
 
-    @GetMapping
+    @GetMapping("/getVehicles")
     public ResponseEntity<List<Vehicle>> getAllVehicle(){
         return ResponseEntity.ok(vehicleService.getAllVehicle());
     }
 
-    @GetMapping("/{vehicleId}")
+    @GetMapping("/getVehicle/{vehicleId}")
     public ResponseEntity<Vehicle> getVehicleById(@PathVariable Long vehicleId){
         return vehicleService.getVehicleById(vehicleId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //Admin can update vehicle(including after inspection(selling price..)) details
     @PutMapping(value = "/updateVehicle/{vehicleId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateVehicleWithImg(
             @RequestHeader("Authorization") String authHeader,
