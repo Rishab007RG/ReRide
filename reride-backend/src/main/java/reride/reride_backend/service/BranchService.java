@@ -25,8 +25,19 @@ public class BranchService {
     @Autowired
     EmployeeRepo employeeRepo;
 
-    public Branch addBranchService(Branch branchData) {
+    public Branch addBranchService(String authHeader, Branch branchData) throws AccessDeniedException {
+        String token = authHeader.substring(7);
+        Long employeeId = jwtUtil.extractUserId(token);
+        String employeeRole = jwtUtil.extractUserRole(token);
 
+        Employee employee = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee doesn't exist"));
+
+        if (!("SUPER_ADMIN".equalsIgnoreCase(employeeRole))) {
+            throw new AccessDeniedException("Access denied: Only SUPER_ADMIN can add a branch.");
+        }
+
+        // Duplicate checks
         if (branchRepo.existsByBranchGstNo(branchData.getBranchGstNo())) {
             throw new IllegalArgumentException("Branch with GST number " + branchData.getBranchGstNo() + " already exists");
         }
@@ -43,6 +54,7 @@ public class BranchService {
             throw new IllegalArgumentException("Branch with email " + branchData.getBranchEmail() + " already exists");
         }
 
+        // Save branch
         Branch branch = new Branch();
         branch.setBranchName(branchData.getBranchName());
         branch.setBranchAddress(branchData.getBranchAddress());
@@ -54,7 +66,6 @@ public class BranchService {
         branch.setBranchOwnerName(branchData.getBranchOwnerName());
         branch.setBranchPhNo(branchData.getBranchPhNo());
         branch.setBranchEmail(branchData.getBranchEmail());
-
 
         return branchRepo.save(branch);
     }
@@ -96,6 +107,70 @@ public class BranchService {
             throw new AccessDeniedException("Access denied: Only SUPER_ADMIN view branch list.");
         }
         return branchRepo.findById(branchId);
+    }
+
+    public Branch updateBranchService(String authHeader, Long branchId, Branch updatedBranch)
+            throws AccessDeniedException {
+
+        String token = authHeader.substring(7);
+        String role = jwtUtil.extractUserRole(token);
+
+        // Only SUPER_ADMIN can update branches
+        if (!"SUPER_ADMIN".equalsIgnoreCase(role)) {
+            throw new AccessDeniedException("Access denied: Only SUPER_ADMIN can update branch details.");
+        }
+
+        Branch existingBranch = branchRepo.findById(branchId)
+                .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + branchId));
+
+        // Update only non-null and non-empty fields
+        if (updatedBranch.getBranchName() != null && !updatedBranch.getBranchName().isBlank()) {
+            existingBranch.setBranchName(updatedBranch.getBranchName());
+        }
+        if (updatedBranch.getBranchAddress() != null && !updatedBranch.getBranchAddress().isBlank()) {
+            existingBranch.setBranchAddress(updatedBranch.getBranchAddress());
+        }
+        if (updatedBranch.getBranchCity() != null && !updatedBranch.getBranchCity().isBlank()) {
+            existingBranch.setBranchCity(updatedBranch.getBranchCity());
+        }
+        if (updatedBranch.getBranchArea() != null && !updatedBranch.getBranchArea().isBlank()) {
+            existingBranch.setBranchArea(updatedBranch.getBranchArea());
+        }
+        if (updatedBranch.getBranchPinCode() != null && !updatedBranch.getBranchPinCode().isBlank()) {
+            existingBranch.setBranchPinCode(updatedBranch.getBranchPinCode());
+        }
+        if (updatedBranch.getBranchGstNo() != null && !updatedBranch.getBranchGstNo().isBlank()) {
+            existingBranch.setBranchGstNo(updatedBranch.getBranchGstNo());
+        }
+        if (updatedBranch.getBranchPanNo() != null && !updatedBranch.getBranchPanNo().isBlank()) {
+            existingBranch.setBranchPanNo(updatedBranch.getBranchPanNo());
+        }
+        if (updatedBranch.getBranchOwnerName() != null && !updatedBranch.getBranchOwnerName().isBlank()) {
+            existingBranch.setBranchOwnerName(updatedBranch.getBranchOwnerName());
+        }
+        if (updatedBranch.getBranchPhNo() != null && !updatedBranch.getBranchPhNo().isBlank()) {
+            existingBranch.setBranchPhNo(updatedBranch.getBranchPhNo());
+        }
+        if (updatedBranch.getBranchEmail() != null && !updatedBranch.getBranchEmail().isBlank()) {
+            existingBranch.setBranchEmail(updatedBranch.getBranchEmail());
+        }
+
+        return branchRepo.save(existingBranch);
+    }
+
+    public void deleteBranchService(String authHeader, Long branchId) throws AccessDeniedException {
+        String token = authHeader.substring(7);
+        String role = jwtUtil.extractUserRole(token);
+
+        // Only SUPER_ADMIN can delete branches
+        if (!"SUPER_ADMIN".equalsIgnoreCase(role)) {
+            throw new AccessDeniedException("Access denied: Only SUPER_ADMIN can delete branches.");
+        }
+
+        Branch branch = branchRepo.findById(branchId)
+                .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + branchId));
+
+        branchRepo.delete(branch);
     }
 }
 

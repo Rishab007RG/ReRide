@@ -26,9 +26,26 @@ public class EmployeeController {
     }
 
     @PostMapping("/addEmployee")
-    public ResponseEntity<String > addEmployee(@RequestHeader("Authorization") String authHeader, @RequestBody Employee employeeData){
-        employeeService.addEmployee(authHeader,employeeData);
-        return ResponseEntity.ok("Employee Successfully added");
+    public ResponseEntity<String> addEmployee(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody Employee employeeData
+    ) {
+        try {
+            employeeService.addEmployee(authHeader, employeeData);
+            return ResponseEntity.ok("Employee Successfully added");
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(403).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/addAdmin/{branchId}")
+    public ResponseEntity<String> addAdmin(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long branchId,
+            @RequestBody Employee employeeData) throws AccessDeniedException {
+
+        employeeService.addAdminToBranch(authHeader, branchId, employeeData);
+        return ResponseEntity.ok("Admin added successfully");
     }
 
     @GetMapping("/getEmployees")
@@ -47,5 +64,29 @@ public class EmployeeController {
         EmployeeDTO employee = employeeService.getEmployeeDetails(authHeader);
         return ResponseEntity.ok(employee);
     }
+
+    @GetMapping("/getEmployeeByBranchId/{branchId}")
+    public List<Employee> getEmployeeByBranchId(@RequestHeader("Authorization") String authHeader,@PathVariable Long branchId) throws AccessDeniedException {
+        List<Employee> employee=employeeService.getEmployeeByBranchIdService(authHeader,branchId);
+        return employee;
+    }
+
+    @PutMapping("/updateEmployee/{employeeId}")
+    public ResponseEntity<String> updateEmployee(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long employeeId,
+            @RequestBody Employee employeeData) throws AccessDeniedException {
+        employeeService.updateEmployeeService(authHeader, employeeId, employeeData);
+        return ResponseEntity.ok("Employee updated successfully");
+    }
+
+    @DeleteMapping("/deleteEmployee/{employeeId}")
+    public ResponseEntity<String> deleteEmployee(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long employeeId) throws AccessDeniedException {
+        employeeService.deleteEmployeeService(authHeader, employeeId);
+        return ResponseEntity.ok("Employee deleted successfully");
+    }
+
 
 }

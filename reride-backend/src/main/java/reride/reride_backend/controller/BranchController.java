@@ -18,9 +18,12 @@ public class BranchController {
     BranchService branchService;
 
     @PostMapping("/addBranch")
-    public ResponseEntity<String> addBranch(@RequestBody Branch branchData){
-        branchService.addBranchService(branchData);
-        return  ResponseEntity.ok("Branch Data Successfully Added");
+    public ResponseEntity<String> addBranch(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody Branch branchData) throws AccessDeniedException {
+
+        branchService.addBranchService(authHeader, branchData);
+        return ResponseEntity.ok("Branch Data Successfully Added");
     }
 
     @GetMapping("/getBranches")
@@ -33,4 +36,22 @@ public class BranchController {
     public Optional<Branch> getBranchById(@RequestHeader("Authorization") String authHeader, @PathVariable long branchId) throws AccessDeniedException {
         return branchService.getBranchByIdService(authHeader,branchId);
     }
+
+    @PutMapping("/updateBranch/{branchId}")
+    public ResponseEntity<String> updateBranch(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long branchId,
+            @RequestBody Branch updatedBranch) throws AccessDeniedException {
+        branchService.updateBranchService(authHeader, branchId, updatedBranch);
+        return ResponseEntity.ok("Branch updated successfully");
+    }
+
+    @DeleteMapping("/deleteBranch/{branchId}")
+    public ResponseEntity<String> deleteBranch(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long branchId) throws AccessDeniedException {
+        branchService.deleteBranchService(authHeader, branchId);
+        return ResponseEntity.ok("Branch deleted successfully");
+    }
+
 }
