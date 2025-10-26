@@ -56,7 +56,7 @@ public class EmployeeController {
         return ResponseEntity.ok(employee);
     }
 
-
+// get Employee by emplyee ID
     @GetMapping("/getEmployee/{employeeId}")
     public Optional<Employee> getEmployeeById(@RequestHeader("Authorization") String authHeader, @PathVariable Long employeeId) throws AccessDeniedException {
         return employeeService.getEmployeeByIdService(authHeader,employeeId);
