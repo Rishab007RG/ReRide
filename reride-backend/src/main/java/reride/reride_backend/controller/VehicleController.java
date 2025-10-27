@@ -91,5 +91,14 @@ public class VehicleController {
         return ResponseEntity.ok("Vehicle details updated successfully");
     }
 
+
+    //to fetch vehicle details based inspection status
+    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}")
+    public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatus(@RequestHeader("Authorization") String authHeader,@PathVariable String inspectionStatus) {
+        List<Vehicle> vehicles = vehicleService.getVehiclesByInspectionStatus(authHeader,inspectionStatus);
+        return ResponseEntity.ok(vehicles);
+    }
+
+
 }
 

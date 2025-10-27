@@ -5,9 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reride.reride_backend.component.JwtUtil;
+import reride.reride_backend.entity.Employee;
 import reride.reride_backend.entity.Inspection;
 import reride.reride_backend.entity.User;
 import reride.reride_backend.entity.Vehicle;
+import reride.reride_backend.enums.InspectionStatus;
+import reride.reride_backend.repository.EmployeeRepo;
 import reride.reride_backend.repository.InspectionRepo;
 import reride.reride_backend.repository.UserRepository;
 import reride.reride_backend.repository.VehicleRepository;
@@ -32,6 +35,9 @@ public class VehicleService {
 
     @Autowired
     InspectionRepo inspectionRepo;
+
+    @Autowired
+    EmployeeRepo employeeRepo;
 
     @Autowired
     JwtUtil jwtUtil;
@@ -264,5 +270,16 @@ public class VehicleService {
             vehicle.setVehicleImage(objectMapper.writeValueAsString(existing));
         }
     }
+
+    public List<Vehicle> getVehiclesByInspectionStatus(String authHeader,String inspectionStatus) {
+        InspectionStatus inspectionStatusEnum=InspectionStatus.valueOf(inspectionStatus.toUpperCase());
+        String token=authHeader.substring(7);
+        Long employeeId=jwtUtil.extractUserId(token);
+        String employeeRole=jwtUtil.extractUserRole(token);
+//        if(employeeRole.equals(E))
+        Employee employee=employeeRepo.findById(employeeId).orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
+        return vehicleRepository.findByInspectionStatus(inspectionStatusEnum);
+    }
+
 }
 
