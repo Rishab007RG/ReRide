@@ -16,7 +16,7 @@ import java.util.Optional;
 public class BranchController {
     @Autowired
     BranchService branchService;
-
+// add branch
     @PostMapping("/addBranch")
     public ResponseEntity<String> addBranch(
             @RequestHeader("Authorization") String authHeader,
@@ -25,18 +25,18 @@ public class BranchController {
         branchService.addBranchService(authHeader, branchData);
         return ResponseEntity.ok("Branch Data Successfully Added");
     }
-
+//get branch
     @GetMapping("/getBranches")
     public ResponseEntity<List<BranchDTO>> getBranches(@RequestHeader("Authorization") String authHeader) throws AccessDeniedException {
         List<BranchDTO> branch=branchService.getBranchesService(authHeader);
         return ResponseEntity.ok(branch);
     }
-
+//get branches by branch ID
     @GetMapping("/getBranches/{branchId}")
     public Optional<Branch> getBranchById(@RequestHeader("Authorization") String authHeader, @PathVariable long branchId) throws AccessDeniedException {
         return branchService.getBranchByIdService(authHeader,branchId);
     }
-
+//Update branche by branch Id
     @PutMapping("/updateBranch/{branchId}")
     public ResponseEntity<String> updateBranch(
             @RequestHeader("Authorization") String authHeader,
@@ -45,7 +45,7 @@ public class BranchController {
         branchService.updateBranchService(authHeader, branchId, updatedBranch);
         return ResponseEntity.ok("Branch updated successfully");
     }
-
+// delete Branch by branch ID
     @DeleteMapping("/deleteBranch/{branchId}")
     public ResponseEntity<String> deleteBranch(
             @RequestHeader("Authorization") String authHeader,
