@@ -93,5 +93,24 @@ public class InspectionService {
         return inspectionRepo.save(inspection);
     }
 
+    public List<Inspection> getInspectionDetailsByStatusService(String authHeader, String inspectionStatus) {
+        String token=authHeader.substring(7);
+        Long employeeId=jwtUtil.extractUserId(token);
+        String employeeRole=jwtUtil.extractUserRole(token);
+        Employee employee=employeeRepo.findById(employeeId).orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
+        InspectionStatus inspectionStatusEnum=InspectionStatus.valueOf(inspectionStatus.toUpperCase());
+        return inspectionRepo.getInspectionDetailsByInspectionsStatus(inspectionStatusEnum);
+    }
+
+    public Inspection getInspectionDetailsByIdService(String authHeader, String inspectionStatus, Long inspectionId) {
+        String token=authHeader.substring(7);
+        Long employeeId=jwtUtil.extractUserId(token);
+        String employeeRole=jwtUtil.extractUserRole(token);
+//        if(employeeRole.equals(E))
+        Employee employee=employeeRepo.findById(employeeId).orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
+        InspectionStatus inspectionStatusEnum=InspectionStatus.valueOf(inspectionStatus.toUpperCase());
+        Inspection inspection=inspectionRepo.getInspectionDetailsByIdandStatus(inspectionId,inspectionStatusEnum);
+        return inspection;
+    }
 }
 

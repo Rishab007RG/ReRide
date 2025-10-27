@@ -50,5 +50,24 @@ public class InspectionController {
         Inspection updated = inspectionService.updateInspectionStatus(authHeader,inspection,inspectionId, status);
         return ResponseEntity.ok(updated);
     }
+
+    //Get inspection details using inspection status
+    @GetMapping("/getInspectionDetailsByStatus/{inspectionStatus}")
+    public ResponseEntity<List<Inspection>> getInspectionDetailsByStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String inspectionStatus) {
+        List<Inspection> getInspectionDetailsByStatus = inspectionService.getInspectionDetailsByStatusService(authHeader, inspectionStatus);
+        return ResponseEntity.ok(getInspectionDetailsByStatus);
+    }
+
+    //Get inspection detail using inspection id
+    @GetMapping("/getInspectionDetailsById/{inspectionId}/{inspectionStatus}")
+    public ResponseEntity<Inspection> getInspectionDetailsById(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String inspectionStatus,
+            @PathVariable Long inspectionId) {
+        Inspection getInspectionDetailsByStatus = inspectionService.getInspectionDetailsByIdService(authHeader, inspectionStatus,inspectionId);
+        return ResponseEntity.ok(getInspectionDetailsByStatus);
+    }
 }
 

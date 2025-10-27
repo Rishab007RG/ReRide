@@ -121,7 +121,8 @@ public class EmployeeService {
                             employee.getEmployeePhNo(),
                             employee.getEmployeeEmail(),
                             employee.getEmployeeRole(),
-                            employee.getAddedById()
+                            employee.getAddedById(),
+                            employee.getBranch()
                     );
                 })
                 .orElseThrow(() -> new RuntimeException("Employee Login Failed"));
@@ -143,7 +144,8 @@ public class EmployeeService {
                         employee.getEmployeePhNo(),
                         employee.getEmployeeEmail(),
                         employee.getEmployeeRole(),
-                        employee.getAddedById()
+                        employee.getAddedById(),
+                        employee.getBranch()
                 )).toList();
     }
 
@@ -174,7 +176,8 @@ public class EmployeeService {
                 employee.getEmployeePhNo(),
                 employee.getEmployeeEmail(),
                 employee.getEmployeeRole(),
-                null
+                null,
+                employee.getBranch()
         );
         return dto;
     }

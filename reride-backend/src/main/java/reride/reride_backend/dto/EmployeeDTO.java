@@ -1,6 +1,7 @@
 package reride.reride_backend.dto;
 
 import lombok.Data;
+import reride.reride_backend.entity.Branch;
 import reride.reride_backend.entity.Employee;
 import reride.reride_backend.enums.Role;
 
@@ -13,8 +14,9 @@ public class EmployeeDTO {
     private String employeeEmail;
     private Role employeeRole;
     private Employee addedById;
+    private Branch branch;
 
-    public EmployeeDTO(String token, Long employeeId, String employeeName, String employeePhNo, String employeeEmail, Role employeeRole, Employee addedById) {
+    public EmployeeDTO(String token, Long employeeId, String employeeName, String employeePhNo, String employeeEmail, Role employeeRole, Employee addedById,Branch branch) {
         this.token = token;
         this.employeeId = employeeId;
         this.employeeName = employeeName;
@@ -22,6 +24,7 @@ public class EmployeeDTO {
         this.employeeEmail = employeeEmail;
         this.employeeRole = employeeRole;
         this.addedById = addedById;
+        this.branch=branch;
     }
 
     public String getToken() {
@@ -78,5 +81,13 @@ public class EmployeeDTO {
 
     public void setAddedById(Employee addedById) {
         this.addedById = addedById;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 }
