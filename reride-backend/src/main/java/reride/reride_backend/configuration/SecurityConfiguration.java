@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/register", "/user/login","/employee/login","/superAdminRegister").permitAll()
+                        .requestMatchers("/user/register", "/user/login","/employee/login","/superAdminRegister", "/uploads/**" , "/vehicle/addVehicle").permitAll()
                         .requestMatchers("/employee/**").hasAnyRole("SUPER_ADMIN","ADMIN", "STAFF")
                         .anyRequest().authenticated()
                 )
@@ -56,7 +56,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","myNewDomainInHere" , "http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000","myNewDomainInHere" , "http://localhost:5173" , "http://127.0.0.1:5501"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true); // Important if you're sending cookies or auth headers
@@ -65,4 +65,5 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }
