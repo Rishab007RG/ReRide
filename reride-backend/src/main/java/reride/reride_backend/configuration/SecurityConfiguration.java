@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/register", "/user/login","/employee/login","/superAdminRegister", "/uploads/**" , "/vehicle/addVehicle").permitAll()
+                        .requestMatchers("/user/register", "/user/login","/employee/login","/superAdminRegister", "/uploads/**" , "/vehicle/addVehicle", "/vehicle/website/addVehicle", "/vehicle/getVehicles/search").permitAll()
                         .requestMatchers("/employee/**").hasAnyRole("SUPER_ADMIN","ADMIN", "STAFF")
                         .anyRequest().authenticated()
                 )

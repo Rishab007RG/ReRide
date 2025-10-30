@@ -36,6 +36,23 @@ public class VehicleController {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @PostMapping(value = "/website/addVehicle", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> addVehicleFromWebsite(
+            @RequestPart("vehicle") String vehicleJson,
+            @RequestPart("user") String userJson,
+            @RequestPart("inspection") String inspectionJson,
+            @RequestPart(value = "documents", required = false) MultipartFile[] documents
+    ) throws IOException {
+
+        System.out.println("Website form submission received");
+
+        Vehicle vehicle = objectMapper.readValue(vehicleJson, Vehicle.class);
+        User user = objectMapper.readValue(userJson, User.class);
+        Inspection inspection = objectMapper.readValue(inspectionJson, Inspection.class);
+
+        vehicleService.addVehicleFromWebsite(vehicle, user, inspection, documents);
+        return ResponseEntity.ok("Vehicle submitted successfully from website");
+    }
 
     @PostMapping(value = "/addVehicle", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> addVehicleWithImg(
@@ -65,6 +82,28 @@ public class VehicleController {
         return vehicleService.getVehicleById(vehicleId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/getVehicles/search")
+    public ResponseEntity<List<Vehicle>> searchVehicles(
+            @RequestParam(required = false) String vehicleInspectionBranch,
+            @RequestParam(required = false) String vehicleBrand,
+            @RequestParam(required = false) String vehicleModel,
+            @RequestParam(required = false) String vehicleType,
+            @RequestParam(required = false) String vehicleModelYear,
+            @RequestParam(required = false) String vehicleMileage,
+            @RequestParam(required = false) String vehicleOutLetPrice
+    ) {
+        List<Vehicle> vehicles = vehicleService.searchVehicles(
+                vehicleInspectionBranch,
+                vehicleBrand,
+                vehicleModel,
+                vehicleType,
+                vehicleModelYear,
+                vehicleMileage,
+                vehicleOutLetPrice
+        );
+        return ResponseEntity.ok(vehicles);
     }
 
     //Admin can update vehicle(including after inspection(selling price..)) details
