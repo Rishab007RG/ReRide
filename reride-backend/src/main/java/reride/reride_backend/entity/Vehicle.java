@@ -1,6 +1,7 @@
 package reride.reride_backend.entity;
 
 import jakarta.persistence.*;
+import reride.reride_backend.enums.VehicleAvailability;
 import reride.reride_backend.enums.WebsiteVisibility;
 
 import java.time.LocalDate;
@@ -53,7 +54,9 @@ public class Vehicle {
 
     private String vehicleMileage;
     private String vehicleOutLetPrice;
-    private String vehicleAvailability; //(Sold/notSold)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VehicleAvailability vehicleAvailability= VehicleAvailability.NOT_SOLD; //(Sold/notSold)
     private Date vehicleSoldDate;
     private String executiveName;
     private String vehicleSellingPrice;
@@ -197,11 +200,11 @@ public class Vehicle {
         this.vehicleOutLetPrice = vehicleOutLetPrice;
     }
 
-    public String getVehicleAvailability() {
+    public VehicleAvailability getVehicleAvailability() {
         return vehicleAvailability;
     }
 
-    public void setVehicleAvailability(String vehicleAvailability) {
+    public void setVehicleAvailability(VehicleAvailability vehicleAvailability) {
         this.vehicleAvailability = vehicleAvailability;
     }
 

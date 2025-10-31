@@ -11,6 +11,7 @@ import reride.reride_backend.entity.Inspection;
 import reride.reride_backend.entity.User;
 import reride.reride_backend.entity.Vehicle;
 import reride.reride_backend.enums.InspectionStatus;
+import reride.reride_backend.enums.VehicleAvailability;
 import reride.reride_backend.enums.WebsiteVisibility;
 import reride.reride_backend.repository.EmployeeRepo;
 import reride.reride_backend.repository.InspectionRepo;
@@ -172,8 +173,11 @@ public class VehicleService {
         return vehicleRepository.findAll();
     }
 
-    public List<Vehicle> getAllVehicleWebsite(){
-        return vehicleRepository.findByWebsiteVisibility(WebsiteVisibility.VISIBLE);
+    public List<Vehicle> getAllVehicleWebsite() {
+        return vehicleRepository.findByWebsiteVisibilityAndAvailability(
+                WebsiteVisibility.VISIBLE,
+                VehicleAvailability.NOT_SOLD
+        );
     }
 
     public Optional<Vehicle> getVehicleById(Long vehicleId){

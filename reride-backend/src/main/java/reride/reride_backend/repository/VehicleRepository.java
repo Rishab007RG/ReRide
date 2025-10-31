@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import reride.reride_backend.entity.Vehicle;
 import reride.reride_backend.enums.InspectionStatus;
+import reride.reride_backend.enums.VehicleAvailability;
 import reride.reride_backend.enums.WebsiteVisibility;
 
 import java.util.List;
@@ -33,7 +34,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle,Long> {
             @Param("vehicleOutLetPrice") String vehicleOutLetPrice
     );
 
-    List<Vehicle> findByWebsiteVisibility(WebsiteVisibility visibility);
+    @Query("SELECT v FROM Vehicle v WHERE v.websiteVisibility = :visibility AND v.vehicleAvailability = :availability")
+    List<Vehicle> findByWebsiteVisibilityAndAvailability(@Param("visibility") WebsiteVisibility visibility,
+                                                         @Param("availability") VehicleAvailability availability);
+
 }
 
 
