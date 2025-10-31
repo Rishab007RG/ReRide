@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reride.reride_backend.component.JwtUtil;
+import reride.reride_backend.dto.VehicleDTO;
 import reride.reride_backend.entity.Employee;
 import reride.reride_backend.entity.Inspection;
 import reride.reride_backend.entity.User;
@@ -44,6 +45,64 @@ public class VehicleService {
 
     public Vehicle addVehicle(Vehicle vehicle){
         return  vehicleRepository.save(vehicle);
+    }
+
+    public ResponseEntity<Vehicle> addVehicleFromWebsite(
+            Vehicle vehicle,
+            User user,
+            Inspection inspection,
+            MultipartFile[] documents
+    ) throws IOException {
+
+        List<String> filePaths = new ArrayList<>();
+
+        // Prepare upload folder
+        String uploadDirPath = System.getProperty("user.dir") + File.separator + "uploads";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+            return ResponseEntity.status(500).body(null);
+        }
+
+        // Handle documents
+        MultipartFile[] safeDocs = (documents != null) ? documents : new MultipartFile[0];
+        for (MultipartFile doc : safeDocs) {
+            if (doc == null || doc.isEmpty()) continue;
+
+            String originalFileName = doc.getOriginalFilename();
+            if (originalFileName == null || originalFileName.isBlank()) continue;
+
+            String contentType = doc.getContentType();
+            if (contentType == null ||
+                    !(contentType.startsWith("image/") || contentType.equals("application/pdf"))) {
+                continue;
+            }
+
+            String uniqueName = System.currentTimeMillis() + "_" + originalFileName;
+            File destFile = new File(uploadDir, uniqueName);
+            doc.transferTo(destFile);
+            filePaths.add(uniqueName);
+        }
+
+        vehicle.setVehicleImage(objectMapper.writeValueAsString(filePaths));
+
+        // Handle user
+        if (user == null) throw new RuntimeException("User data is required");
+
+        if (user.getUserId() != null) {
+            User existingUser = userRepository.findById(user.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found with ID: " + user.getUserId()));
+            vehicle.setUser(existingUser);
+        } else {
+            User savedUser = userRepository.save(user);
+            vehicle.setUser(savedUser);
+        }
+
+        // Save inspection
+        Inspection savedInspection = inspectionRepo.save(inspection);
+        vehicle.setInspection(savedInspection);
+
+        Vehicle savedVehicle = vehicleRepository.save(vehicle);
+        return ResponseEntity.ok(savedVehicle);
     }
 
     public ResponseEntity<Vehicle> addVehicleAndUser(Vehicle vehicle, User user, Inspection inspection, MultipartFile[] documents) throws IOException {
@@ -116,6 +175,44 @@ public class VehicleService {
         return vehicleRepository.findById(vehicleId);
     }
 
+    public List<Vehicle> searchVehicles(
+            String vehicleInspectionBranch,
+            String vehicleBrand,
+            String vehicleModel,
+            String vehicleType,
+            String vehicleModelYear,
+            String vehicleMileage,
+            String vehicleOutLetPrice
+    ) {
+        return vehicleRepository.searchVehicles(
+                vehicleInspectionBranch,
+                vehicleBrand,
+                vehicleModel,
+                vehicleType,
+                vehicleModelYear,
+                vehicleMileage,
+                vehicleOutLetPrice
+        );
+    }
+
+    public List<VehicleDTO> mapToVehicleDtoList(List<Vehicle> vehicles) {
+        return vehicles.stream().map(v -> new VehicleDTO(
+                v.getVehicleId(),
+                v.getVehicleBrand(),
+                v.getVehicleModel(),
+                v.getVehicleType(),
+                v.getVehicleModelYear(),
+                v.getVehicleColour(),
+                v.getVehicleOwnerType(),
+                v.getVehicleRegisterNumber(),
+                v.getVehicleImage(),
+                v.getVehicleInspectionBranch(),
+                v.getVehicleMileage(),
+                v.getVehicleOutLetPrice()
+        )).toList();
+    }
+
+
     public ResponseEntity<Vehicle> updateVehicleAndUser(
             String authHeader,
             Long vehicleId,
@@ -178,6 +275,7 @@ public class VehicleService {
 
         if (updated.getVehicleBrand() != null) existing.setVehicleBrand(updated.getVehicleBrand());
         if (updated.getVehicleModel() != null) existing.setVehicleModel(updated.getVehicleModel());
+        if (updated.getVehicleType() != null) existing.setVehicleType(updated.getVehicleType());
         if (updated.getVehicleModelYear() != null) existing.setVehicleModelYear(updated.getVehicleModelYear());
         if (updated.getVehicleColour() != null) existing.setVehicleColour(updated.getVehicleColour());
         if (updated.getVehiclePurchasedDate() != null) existing.setVehiclePurchasedDate(updated.getVehiclePurchasedDate());
@@ -189,6 +287,7 @@ public class VehicleService {
         if (updated.getVehicleInspectionDate() != null) existing.setVehicleInspectionDate(updated.getVehicleInspectionDate());
 
         // Newly added fields
+        if (updated.getVehicleMileage() != null) existing.setVehicleMileage(updated.getVehicleMileage());
         if (updated.getVehicleOutLetPrice() != null) existing.setVehicleOutLetPrice(updated.getVehicleOutLetPrice());
         if (updated.getVehicleAvailability() != null) existing.setVehicleAvailability(updated.getVehicleAvailability());
         if (updated.getVehicleSoldDate() != null) existing.setVehicleSoldDate(updated.getVehicleSoldDate());

@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reride.reride_backend.dto.VehicleDTO;
 import reride.reride_backend.entity.Inspection;
 import reride.reride_backend.entity.User;
 import reride.reride_backend.entity.Vehicle;
@@ -36,6 +37,23 @@ public class VehicleController {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @PostMapping(value = "/website/addVehicle", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> addVehicleFromWebsite(
+            @RequestPart("vehicle") String vehicleJson,
+            @RequestPart("user") String userJson,
+            @RequestPart("inspection") String inspectionJson,
+            @RequestPart(value = "documents", required = false) MultipartFile[] documents
+    ) throws IOException {
+
+        System.out.println("Website form submission received");
+
+        Vehicle vehicle = objectMapper.readValue(vehicleJson, Vehicle.class);
+        User user = objectMapper.readValue(userJson, User.class);
+        Inspection inspection = objectMapper.readValue(inspectionJson, Inspection.class);
+
+        vehicleService.addVehicleFromWebsite(vehicle, user, inspection, documents);
+        return ResponseEntity.ok("Vehicle submitted successfully from website");
+    }
 
     @PostMapping(value = "/addVehicle", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> addVehicleWithImg(
@@ -66,6 +84,31 @@ public class VehicleController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/getVehicles/search")
+    public ResponseEntity<List<VehicleDTO>> searchVehicles(
+            @RequestParam(required = false) String vehicleInspectionBranch,
+            @RequestParam(required = false) String vehicleBrand,
+            @RequestParam(required = false) String vehicleModel,
+            @RequestParam(required = false) String vehicleType,
+            @RequestParam(required = false) String vehicleModelYear,
+            @RequestParam(required = false) String vehicleMileage,
+            @RequestParam(required = false) String vehicleOutLetPrice
+    ) {
+        List<Vehicle> vehicles = vehicleService.searchVehicles(
+                vehicleInspectionBranch,
+                vehicleBrand,
+                vehicleModel,
+                vehicleType,
+                vehicleModelYear,
+                vehicleMileage,
+                vehicleOutLetPrice
+        );
+
+        List<VehicleDTO> vehicleDto = vehicleService.mapToVehicleDtoList(vehicles);
+        return ResponseEntity.ok(vehicleDto);
+    }
+
 
     //Admin can update vehicle(including after inspection(selling price..)) details
     @PutMapping(value = "/updateVehicle/{vehicleId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

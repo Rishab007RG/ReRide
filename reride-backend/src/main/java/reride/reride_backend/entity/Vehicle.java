@@ -17,6 +17,8 @@ public class Vehicle {
     @Column(nullable = false)
     private String vehicleModel;
     @Column(nullable = false)
+    private String vehicleType;
+    @Column(nullable = false)
     private String vehicleModelYear;
     @Column(nullable = false)
     private String vehicleColour;
@@ -49,6 +51,7 @@ public class Vehicle {
 
 //private String vehicleBoughtPrice;//future
 
+    private String vehicleMileage;
     private String vehicleOutLetPrice;
     private String vehicleAvailability; //(Sold/notSold)
     private Date vehicleSoldDate;
@@ -96,6 +99,14 @@ public class Vehicle {
 
     public void setVehicleModel(String vehicleModel) {
         this.vehicleModel = vehicleModel;
+    }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
 
     public String getVehicleModelYear() {
@@ -168,6 +179,14 @@ public class Vehicle {
 
     public void setVehicleInspectionDate(LocalDate vehicleInspectionDate) {
         this.vehicleInspectionDate = vehicleInspectionDate;
+    }
+
+    public String getVehicleMileage() {
+        return vehicleMileage;
+    }
+
+    public void setVehicleMileage(String vehicleMileage) {
+        this.vehicleMileage = vehicleMileage;
     }
 
     public String getVehicleOutLetPrice() {
