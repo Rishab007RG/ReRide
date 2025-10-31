@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reride.reride_backend.dto.VehicleDTO;
 import reride.reride_backend.entity.Inspection;
 import reride.reride_backend.entity.User;
 import reride.reride_backend.entity.Vehicle;
@@ -85,7 +86,7 @@ public class VehicleController {
     }
 
     @GetMapping("/getVehicles/search")
-    public ResponseEntity<List<Vehicle>> searchVehicles(
+    public ResponseEntity<List<VehicleDTO>> searchVehicles(
             @RequestParam(required = false) String vehicleInspectionBranch,
             @RequestParam(required = false) String vehicleBrand,
             @RequestParam(required = false) String vehicleModel,
@@ -103,8 +104,11 @@ public class VehicleController {
                 vehicleMileage,
                 vehicleOutLetPrice
         );
-        return ResponseEntity.ok(vehicles);
+
+        List<VehicleDTO> vehicleDto = vehicleService.mapToVehicleDtoList(vehicles);
+        return ResponseEntity.ok(vehicleDto);
     }
+
 
     //Admin can update vehicle(including after inspection(selling price..)) details
     @PutMapping(value = "/updateVehicle/{vehicleId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

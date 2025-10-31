@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reride.reride_backend.component.JwtUtil;
+import reride.reride_backend.dto.VehicleDTO;
 import reride.reride_backend.entity.Employee;
 import reride.reride_backend.entity.Inspection;
 import reride.reride_backend.entity.User;
@@ -193,6 +194,24 @@ public class VehicleService {
                 vehicleOutLetPrice
         );
     }
+
+    public List<VehicleDTO> mapToVehicleDtoList(List<Vehicle> vehicles) {
+        return vehicles.stream().map(v -> new VehicleDTO(
+                v.getVehicleId(),
+                v.getVehicleBrand(),
+                v.getVehicleModel(),
+                v.getVehicleType(),
+                v.getVehicleModelYear(),
+                v.getVehicleColour(),
+                v.getVehicleOwnerType(),
+                v.getVehicleRegisterNumber(),
+                v.getVehicleImage(),
+                v.getVehicleInspectionBranch(),
+                v.getVehicleMileage(),
+                v.getVehicleOutLetPrice()
+        )).toList();
+    }
+
 
     public ResponseEntity<Vehicle> updateVehicleAndUser(
             String authHeader,
