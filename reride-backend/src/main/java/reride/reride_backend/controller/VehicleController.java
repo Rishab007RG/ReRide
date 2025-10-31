@@ -78,6 +78,13 @@ public class VehicleController {
         return ResponseEntity.ok(vehicleService.getAllVehicle());
     }
 
+    @GetMapping("/website/getVehicles")
+    public ResponseEntity<List<VehicleDTO>> getAllVehicleWebsite() {
+        List<Vehicle> vehicles = vehicleService.getAllVehicleWebsite();
+        List<VehicleDTO> vehicleDto = vehicleService.mapToVehicleDtoList(vehicles);
+        return ResponseEntity.ok(vehicleDto);
+    }
+
     @GetMapping("/getVehicle/{vehicleId}")
     public ResponseEntity<Vehicle> getVehicleById(@PathVariable Long vehicleId){
         return vehicleService.getVehicleById(vehicleId)
@@ -85,7 +92,7 @@ public class VehicleController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/getVehicles/search")
+    @GetMapping("/website/getVehicles/search")
     public ResponseEntity<List<VehicleDTO>> searchVehicles(
             @RequestParam(required = false) String vehicleInspectionBranch,
             @RequestParam(required = false) String vehicleBrand,
