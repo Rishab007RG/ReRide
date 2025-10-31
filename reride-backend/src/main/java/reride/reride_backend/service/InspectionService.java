@@ -73,6 +73,7 @@ public class InspectionService {
         existingInspection.setVehiclePaintConditionRemarks(inspection.getVehiclePaintConditionRemarks());
         existingInspection.setVehicleTeflonCoating(inspection.getVehicleTeflonCoating());
         existingInspection.setVehicleFinalInspection(inspection.getVehicleFinalInspection());
+        existingInspection.setInspectionStatus(inspection.getInspectionStatus());
 
         return inspectionRepo.save(existingInspection);
     }

@@ -384,8 +384,9 @@ public class VehicleService {
         String token=authHeader.substring(7);
         Long employeeId=jwtUtil.extractUserId(token);
         String employeeRole=jwtUtil.extractUserRole(token);
+        System.out.println("Vehicle inspection status service");
 //        if(employeeRole.equals(E))
-        Employee employee=employeeRepo.findById(employeeId).orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
+//        Employee employee=employeeRepo.findById(employeeId).orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
         return vehicleRepository.findByInspectionStatus(inspectionStatusEnum);
     }
 

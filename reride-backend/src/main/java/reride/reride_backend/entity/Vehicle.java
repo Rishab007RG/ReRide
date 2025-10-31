@@ -31,7 +31,7 @@ public class Vehicle {
     private String vehicleOwnerType;
     @Column(nullable = false,unique = true)
     private String vehicleRegisterNumber;
-
+    private LocalDate submittedAt = LocalDate.now();
     private String vehicleImage;
     @Column(nullable = false)
     private String vehicleInspectionBranch;
@@ -262,6 +262,14 @@ public class Vehicle {
 
     public void setWebsiteVisibility(WebsiteVisibility websiteVisibility) {
         this.websiteVisibility = websiteVisibility;
+    }
+
+    public LocalDate getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(LocalDate submittedAt) {
+        this.submittedAt = submittedAt;
     }
 }
 
