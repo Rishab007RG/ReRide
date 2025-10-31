@@ -92,6 +92,13 @@ public class VehicleController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/website/getVehicle/{vehicleId}")
+    public ResponseEntity<VehicleDTO> getVehicleByIdWebsite(@PathVariable Long vehicleId) {
+        return vehicleService.getVehicleByIdWebsite(vehicleId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/website/getVehicles/search")
     public ResponseEntity<List<VehicleDTO>> searchVehicles(
             @RequestParam(required = false) String vehicleInspectionBranch,

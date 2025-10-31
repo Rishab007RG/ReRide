@@ -167,8 +167,6 @@ public class VehicleService {
         return ResponseEntity.ok(savedVehicle);
     }
 
-
-
     public List<Vehicle> getAllVehicle(){
         return vehicleRepository.findAll();
     }
@@ -182,6 +180,14 @@ public class VehicleService {
 
     public Optional<Vehicle> getVehicleById(Long vehicleId){
         return vehicleRepository.findById(vehicleId);
+    }
+
+    public Optional<VehicleDTO> getVehicleByIdWebsite(Long vehicleId) {
+        return vehicleRepository.findByIdAndWebsiteVisibilityAndAvailability(
+                vehicleId,
+                WebsiteVisibility.VISIBLE,
+                VehicleAvailability.NOT_SOLD
+        ).map(this::mapToVehicleDto);
     }
 
     public List<Vehicle> searchVehicles(
@@ -221,6 +227,22 @@ public class VehicleService {
         )).toList();
     }
 
+    private VehicleDTO mapToVehicleDto(Vehicle v) {
+        return new VehicleDTO(
+                v.getVehicleId(),
+                v.getVehicleBrand(),
+                v.getVehicleModel(),
+                v.getVehicleType(),
+                v.getVehicleModelYear(),
+                v.getVehicleColour(),
+                v.getVehicleOwnerType(),
+                v.getVehicleRegisterNumber(),
+                v.getVehicleImage(),
+                v.getVehicleInspectionBranch(),
+                v.getVehicleMileage(),
+                v.getVehicleOutLetPrice()
+        );
+    }
 
     public ResponseEntity<Vehicle> updateVehicleAndUser(
             String authHeader,

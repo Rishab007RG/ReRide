@@ -10,6 +10,7 @@ import reride.reride_backend.enums.VehicleAvailability;
 import reride.reride_backend.enums.WebsiteVisibility;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle,Long> {
@@ -38,6 +39,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle,Long> {
     List<Vehicle> findByWebsiteVisibilityAndAvailability(@Param("visibility") WebsiteVisibility visibility,
                                                          @Param("availability") VehicleAvailability availability);
 
+    @Query("SELECT v FROM Vehicle v WHERE v.vehicleId = :vehicleId AND v.websiteVisibility = :visibility AND v.vehicleAvailability = :availability")
+    Optional<Vehicle> findByIdAndWebsiteVisibilityAndAvailability(@Param("vehicleId") Long vehicleId,
+                                                                  @Param("visibility") WebsiteVisibility visibility,
+                                                                  @Param("availability") VehicleAvailability availability);
 }
 
 
