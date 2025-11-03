@@ -1,6 +1,7 @@
 package reride.reride_backend.entity;
 
 import jakarta.persistence.*;
+import reride.reride_backend.enums.VehicleAvailability;
 import reride.reride_backend.enums.WebsiteVisibility;
 
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ public class Vehicle {
     @Column(nullable = false)
     private String vehicleModel;
     @Column(nullable = false)
-    private String vehicleType;//[BIKE,SCOOTER]
+    private String vehicleType;
     @Column(nullable = false)
     private String vehicleModelYear;
     @Column(nullable = false)
@@ -30,12 +31,10 @@ public class Vehicle {
     private String vehicleOwnerType;
     @Column(nullable = false,unique = true)
     private String vehicleRegisterNumber;
-
+    private LocalDate submittedAt = LocalDate.now();
     private String vehicleImage;
-
     @Column(nullable = false)
     private String vehicleInspectionBranch;
-
     @Column(nullable = false)
     private LocalDate vehicleInspectionDate;
 
@@ -51,15 +50,13 @@ public class Vehicle {
     @JoinColumn(name = "inspection_id",referencedColumnName = "inspectionId")
     private Inspection inspection;
 
-    @ManyToOne
-    @JoinColumn(name = "branch_id",nullable = true)  //<- make it false after adding the super admin
-    private Branch branch;
-
-
 //private String vehicleBoughtPrice;//future
 
+    private String vehicleMileage;
     private String vehicleOutLetPrice;
-    private String vehicleAvailability; //(Sold/notSold)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VehicleAvailability vehicleAvailability= VehicleAvailability.NOT_SOLD; //(Sold/notSold)
     private Date vehicleSoldDate;
     private String executiveName;
     private String vehicleSellingPrice;
@@ -187,6 +184,14 @@ public class Vehicle {
         this.vehicleInspectionDate = vehicleInspectionDate;
     }
 
+    public String getVehicleMileage() {
+        return vehicleMileage;
+    }
+
+    public void setVehicleMileage(String vehicleMileage) {
+        this.vehicleMileage = vehicleMileage;
+    }
+
     public String getVehicleOutLetPrice() {
         return vehicleOutLetPrice;
     }
@@ -195,11 +200,11 @@ public class Vehicle {
         this.vehicleOutLetPrice = vehicleOutLetPrice;
     }
 
-    public String getVehicleAvailability() {
+    public VehicleAvailability getVehicleAvailability() {
         return vehicleAvailability;
     }
 
-    public void setVehicleAvailability(String vehicleAvailability) {
+    public void setVehicleAvailability(VehicleAvailability vehicleAvailability) {
         this.vehicleAvailability = vehicleAvailability;
     }
 
@@ -259,12 +264,11 @@ public class Vehicle {
         this.websiteVisibility = websiteVisibility;
     }
 
-    public Branch getBranch() {
-        return branch;
+    public LocalDate getSubmittedAt() {
+        return submittedAt;
     }
 
-    public void setBranch(Branch branch) {
-        this.branch = branch;
+    public void setSubmittedAt(LocalDate submittedAt) {
+        this.submittedAt = submittedAt;
     }
 }
-

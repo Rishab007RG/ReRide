@@ -10,10 +10,39 @@ import reride.reride_backend.enums.VehicleAvailability;
 import reride.reride_backend.enums.WebsiteVisibility;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle,Long> {
-    @Query("SELECT v FROM Vehicle v WHERE v.inspection.inspectionStatus = :status and v.vehicleAvailability =: vehicleAvailability and v.websiteVisibility=: websiteVisibility")
-    List<Vehicle> findByInspectionStatus(@Param("status") InspectionStatus status, @Param("vehicleAvailability") VehicleAvailability vehicleAvailabilityEnum, @Param("websiteVisibility") WebsiteVisibility websiteVisibilityEnum);
+    @Query("SELECT v FROM Vehicle v WHERE v.inspection.inspectionStatus = :status")
+    List<Vehicle> findByInspectionStatus(@Param("status") InspectionStatus status);
+
+    @Query("SELECT v FROM Vehicle v WHERE "
+            + "(:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch) AND "
+            + "(:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand) AND "
+            + "(:vehicleModel IS NULL OR v.vehicleModel = :vehicleModel) AND "
+            + "(:vehicleType IS NULL OR v.vehicleType = :vehicleType) AND "
+            + "(:vehicleModelYear IS NULL OR v.vehicleModelYear = :vehicleModelYear) AND "
+            + "(:vehicleMileage IS NULL OR v.vehicleMileage = :vehicleMileage) AND "
+            + "(:vehicleOutLetPrice IS NULL OR v.vehicleOutLetPrice = :vehicleOutLetPrice)")
+    List<Vehicle> searchVehicles(
+            @Param("vehicleInspectionBranch") String vehicleInspectionBranch,
+            @Param("vehicleBrand") String vehicleBrand,
+            @Param("vehicleModel") String vehicleModel,
+            @Param("vehicleType") String vehicleType,
+            @Param("vehicleModelYear") String vehicleModelYear,
+            @Param("vehicleMileage") String vehicleMileage,
+            @Param("vehicleOutLetPrice") String vehicleOutLetPrice
+    );
+
+    @Query("SELECT v FROM Vehicle v WHERE v.websiteVisibility = :visibility AND v.vehicleAvailability = :availability")
+    List<Vehicle> findByWebsiteVisibilityAndAvailability(@Param("visibility") WebsiteVisibility visibility,
+                                                         @Param("availability") VehicleAvailability availability);
+
+    @Query("SELECT v FROM Vehicle v WHERE v.vehicleId = :vehicleId AND v.websiteVisibility = :visibility AND v.vehicleAvailability = :availability")
+    Optional<Vehicle> findByIdAndWebsiteVisibilityAndAvailability(@Param("vehicleId") Long vehicleId,
+                                                                  @Param("visibility") WebsiteVisibility visibility,
+                                                                  @Param("availability") VehicleAvailability availability);
 }
+
 

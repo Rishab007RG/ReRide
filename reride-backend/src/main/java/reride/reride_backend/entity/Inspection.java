@@ -41,7 +41,6 @@ public class Inspection {
     @Column(nullable = false)
     private InspectionStatus inspectionStatus=InspectionStatus.PROCESSING;
 
-
     @OneToOne(mappedBy = "inspection", cascade = CascadeType.ALL)
     @JsonIgnore
     private Vehicle vehicles;

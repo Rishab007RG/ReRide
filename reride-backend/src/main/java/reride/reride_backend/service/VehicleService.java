@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reride.reride_backend.component.JwtUtil;
+import reride.reride_backend.dto.VehicleDTO;
 import reride.reride_backend.entity.Employee;
 import reride.reride_backend.entity.Inspection;
 import reride.reride_backend.entity.User;
@@ -21,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -45,6 +45,9 @@ public class VehicleService {
     @Autowired
     JwtUtil jwtUtil;
 
+    public Vehicle addVehicle(Vehicle vehicle){
+        return  vehicleRepository.save(vehicle);
+    }
 
     public ResponseEntity<Vehicle> addVehicleFromWebsite(
             Vehicle vehicle,
@@ -84,10 +87,6 @@ public class VehicleService {
 
         vehicle.setVehicleImage(objectMapper.writeValueAsString(filePaths));
 
-        // Since this is public submission, set default visibility & status
-//        vehicle.setWebsiteVisibility(WebsiteVisibility.NOT_VISIBLE);
-//        vehicle.setVehicleAvailability("Pending Review");
-
         // Handle user
         if (user == null) throw new RuntimeException("User data is required");
 
@@ -106,10 +105,6 @@ public class VehicleService {
 
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
         return ResponseEntity.ok(savedVehicle);
-    }
-
-    public Vehicle addVehicle(Vehicle vehicle){
-        return  vehicleRepository.save(vehicle);
     }
 
     public ResponseEntity<Vehicle> addVehicleAndUser(Vehicle vehicle, User user, Inspection inspection, MultipartFile[] documents) throws IOException {
@@ -172,14 +167,81 @@ public class VehicleService {
         return ResponseEntity.ok(savedVehicle);
     }
 
-
-
     public List<Vehicle> getAllVehicle(){
         return vehicleRepository.findAll();
     }
 
+    public List<Vehicle> getAllVehicleWebsite() {
+        return vehicleRepository.findByWebsiteVisibilityAndAvailability(
+                WebsiteVisibility.VISIBLE,
+                VehicleAvailability.NOT_SOLD
+        );
+    }
+
     public Optional<Vehicle> getVehicleById(Long vehicleId){
         return vehicleRepository.findById(vehicleId);
+    }
+
+    public Optional<VehicleDTO> getVehicleByIdWebsite(Long vehicleId) {
+        return vehicleRepository.findByIdAndWebsiteVisibilityAndAvailability(
+                vehicleId,
+                WebsiteVisibility.VISIBLE,
+                VehicleAvailability.NOT_SOLD
+        ).map(this::mapToVehicleDto);
+    }
+
+    public List<Vehicle> searchVehicles(
+            String vehicleInspectionBranch,
+            String vehicleBrand,
+            String vehicleModel,
+            String vehicleType,
+            String vehicleModelYear,
+            String vehicleMileage,
+            String vehicleOutLetPrice
+    ) {
+        return vehicleRepository.searchVehicles(
+                vehicleInspectionBranch,
+                vehicleBrand,
+                vehicleModel,
+                vehicleType,
+                vehicleModelYear,
+                vehicleMileage,
+                vehicleOutLetPrice
+        );
+    }
+
+    public List<VehicleDTO> mapToVehicleDtoList(List<Vehicle> vehicles) {
+        return vehicles.stream().map(v -> new VehicleDTO(
+                v.getVehicleId(),
+                v.getVehicleBrand(),
+                v.getVehicleModel(),
+                v.getVehicleType(),
+                v.getVehicleModelYear(),
+                v.getVehicleColour(),
+                v.getVehicleOwnerType(),
+                v.getVehicleRegisterNumber(),
+                v.getVehicleImage(),
+                v.getVehicleInspectionBranch(),
+                v.getVehicleMileage(),
+                v.getVehicleOutLetPrice()
+        )).toList();
+    }
+
+    private VehicleDTO mapToVehicleDto(Vehicle v) {
+        return new VehicleDTO(
+                v.getVehicleId(),
+                v.getVehicleBrand(),
+                v.getVehicleModel(),
+                v.getVehicleType(),
+                v.getVehicleModelYear(),
+                v.getVehicleColour(),
+                v.getVehicleOwnerType(),
+                v.getVehicleRegisterNumber(),
+                v.getVehicleImage(),
+                v.getVehicleInspectionBranch(),
+                v.getVehicleMileage(),
+                v.getVehicleOutLetPrice()
+        );
     }
 
     public ResponseEntity<Vehicle> updateVehicleAndUser(
@@ -244,7 +306,7 @@ public class VehicleService {
 
         if (updated.getVehicleBrand() != null) existing.setVehicleBrand(updated.getVehicleBrand());
         if (updated.getVehicleModel() != null) existing.setVehicleModel(updated.getVehicleModel());
-        if(updated.getVehicleType()!=null) existing.setVehicleType(updated.getVehicleType());
+        if (updated.getVehicleType() != null) existing.setVehicleType(updated.getVehicleType());
         if (updated.getVehicleModelYear() != null) existing.setVehicleModelYear(updated.getVehicleModelYear());
         if (updated.getVehicleColour() != null) existing.setVehicleColour(updated.getVehicleColour());
         if (updated.getVehiclePurchasedDate() != null) existing.setVehiclePurchasedDate(updated.getVehiclePurchasedDate());
@@ -256,6 +318,7 @@ public class VehicleService {
         if (updated.getVehicleInspectionDate() != null) existing.setVehicleInspectionDate(updated.getVehicleInspectionDate());
 
         // Newly added fields
+        if (updated.getVehicleMileage() != null) existing.setVehicleMileage(updated.getVehicleMileage());
         if (updated.getVehicleOutLetPrice() != null) existing.setVehicleOutLetPrice(updated.getVehicleOutLetPrice());
         if (updated.getVehicleAvailability() != null) existing.setVehicleAvailability(updated.getVehicleAvailability());
         if (updated.getVehicleSoldDate() != null) existing.setVehicleSoldDate(updated.getVehicleSoldDate());
@@ -338,18 +401,15 @@ public class VehicleService {
         }
     }
 
-    public List<Vehicle> getVehiclesByInspectionStatus(String authHeader,String inspectionStatus,String vehicleAvailability,String websiteVisibility) {
+    public List<Vehicle> getVehiclesByInspectionStatus(String authHeader,String inspectionStatus) {
         InspectionStatus inspectionStatusEnum=InspectionStatus.valueOf(inspectionStatus.toUpperCase());
-        VehicleAvailability vehicleAvailabilityEnum=VehicleAvailability.valueOf(vehicleAvailability.toUpperCase());
-        WebsiteVisibility websiteVisibilityEnum =WebsiteVisibility.valueOf(websiteVisibility.toUpperCase());
-
         String token=authHeader.substring(7);
         Long employeeId=jwtUtil.extractUserId(token);
         String employeeRole=jwtUtil.extractUserRole(token);
+        System.out.println("Vehicle inspection status service");
 //        if(employeeRole.equals(E))
-        Employee employee=employeeRepo.findById(employeeId).orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
-        return vehicleRepository.findByInspectionStatus(inspectionStatusEnum,vehicleAvailabilityEnum,websiteVisibilityEnum);
+//        Employee employee=employeeRepo.findById(employeeId).orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
+        return vehicleRepository.findByInspectionStatus(inspectionStatusEnum);
     }
 
 }
-

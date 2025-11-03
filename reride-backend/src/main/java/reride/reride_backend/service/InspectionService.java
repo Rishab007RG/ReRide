@@ -35,8 +35,6 @@ public class InspectionService {
     }
 
     public List<Inspection> getAllInspections() {
-        Inspection insp=new Inspection();
-        System.out.println("Inspection: "+insp.getVehicles().getBranch().getBranchId());
         return inspectionRepo.findAll();
     }
 
@@ -75,6 +73,7 @@ public class InspectionService {
         existingInspection.setVehiclePaintConditionRemarks(inspection.getVehiclePaintConditionRemarks());
         existingInspection.setVehicleTeflonCoating(inspection.getVehicleTeflonCoating());
         existingInspection.setVehicleFinalInspection(inspection.getVehicleFinalInspection());
+        existingInspection.setInspectionStatus(inspection.getInspectionStatus());
 
         return inspectionRepo.save(existingInspection);
     }
