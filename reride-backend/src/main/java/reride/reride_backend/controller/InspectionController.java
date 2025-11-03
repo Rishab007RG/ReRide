@@ -39,7 +39,7 @@ public class InspectionController {
     public ResponseEntity<Inspection> updateInspection(@RequestHeader("Authorization") String authHeader, @RequestBody Inspection inspection, @PathVariable Long inspectionId){
         return ResponseEntity.ok(inspectionService.updateInspectionService(authHeader, inspection, inspectionId));
     }
-// update inspection destails [PROCESSING, ACCEPT, RESCHEDULE, SUBMIT] This is where Staff handles request
+// update inspection details [PROCESSING, ACCEPT, RESCHEDULE, SUBMIT] This is where Staff handles request
     @PutMapping("updateInspectionStatus/{inspectionId}/status")
     public ResponseEntity<Inspection> updateInspectionStatus(
             @RequestHeader("Authorization") String authHeader,

@@ -10,6 +10,8 @@ import reride.reride_backend.entity.Inspection;
 import reride.reride_backend.entity.User;
 import reride.reride_backend.entity.Vehicle;
 import reride.reride_backend.enums.InspectionStatus;
+import reride.reride_backend.enums.VehicleAvailability;
+import reride.reride_backend.enums.WebsiteVisibility;
 import reride.reride_backend.repository.EmployeeRepo;
 import reride.reride_backend.repository.InspectionRepo;
 import reride.reride_backend.repository.UserRepository;
@@ -19,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -41,6 +44,69 @@ public class VehicleService {
 
     @Autowired
     JwtUtil jwtUtil;
+
+
+    public ResponseEntity<Vehicle> addVehicleFromWebsite(
+            Vehicle vehicle,
+            User user,
+            Inspection inspection,
+            MultipartFile[] documents
+    ) throws IOException {
+
+        List<String> filePaths = new ArrayList<>();
+
+        // Prepare upload folder
+        String uploadDirPath = System.getProperty("user.dir") + File.separator + "uploads";
+        File uploadDir = new File(uploadDirPath);
+        if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+            return ResponseEntity.status(500).body(null);
+        }
+
+        // Handle documents
+        MultipartFile[] safeDocs = (documents != null) ? documents : new MultipartFile[0];
+        for (MultipartFile doc : safeDocs) {
+            if (doc == null || doc.isEmpty()) continue;
+
+            String originalFileName = doc.getOriginalFilename();
+            if (originalFileName == null || originalFileName.isBlank()) continue;
+
+            String contentType = doc.getContentType();
+            if (contentType == null ||
+                    !(contentType.startsWith("image/") || contentType.equals("application/pdf"))) {
+                continue;
+            }
+
+            String uniqueName = System.currentTimeMillis() + "_" + originalFileName;
+            File destFile = new File(uploadDir, uniqueName);
+            doc.transferTo(destFile);
+            filePaths.add(uniqueName);
+        }
+
+        vehicle.setVehicleImage(objectMapper.writeValueAsString(filePaths));
+
+        // Since this is public submission, set default visibility & status
+//        vehicle.setWebsiteVisibility(WebsiteVisibility.NOT_VISIBLE);
+//        vehicle.setVehicleAvailability("Pending Review");
+
+        // Handle user
+        if (user == null) throw new RuntimeException("User data is required");
+
+        if (user.getUserId() != null) {
+            User existingUser = userRepository.findById(user.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found with ID: " + user.getUserId()));
+            vehicle.setUser(existingUser);
+        } else {
+            User savedUser = userRepository.save(user);
+            vehicle.setUser(savedUser);
+        }
+
+        // Save inspection
+        Inspection savedInspection = inspectionRepo.save(inspection);
+        vehicle.setInspection(savedInspection);
+
+        Vehicle savedVehicle = vehicleRepository.save(vehicle);
+        return ResponseEntity.ok(savedVehicle);
+    }
 
     public Vehicle addVehicle(Vehicle vehicle){
         return  vehicleRepository.save(vehicle);
@@ -178,6 +244,7 @@ public class VehicleService {
 
         if (updated.getVehicleBrand() != null) existing.setVehicleBrand(updated.getVehicleBrand());
         if (updated.getVehicleModel() != null) existing.setVehicleModel(updated.getVehicleModel());
+        if(updated.getVehicleType()!=null) existing.setVehicleType(updated.getVehicleType());
         if (updated.getVehicleModelYear() != null) existing.setVehicleModelYear(updated.getVehicleModelYear());
         if (updated.getVehicleColour() != null) existing.setVehicleColour(updated.getVehicleColour());
         if (updated.getVehiclePurchasedDate() != null) existing.setVehiclePurchasedDate(updated.getVehiclePurchasedDate());
@@ -271,14 +338,17 @@ public class VehicleService {
         }
     }
 
-    public List<Vehicle> getVehiclesByInspectionStatus(String authHeader,String inspectionStatus) {
+    public List<Vehicle> getVehiclesByInspectionStatus(String authHeader,String inspectionStatus,String vehicleAvailability,String websiteVisibility) {
         InspectionStatus inspectionStatusEnum=InspectionStatus.valueOf(inspectionStatus.toUpperCase());
+        VehicleAvailability vehicleAvailabilityEnum=VehicleAvailability.valueOf(vehicleAvailability.toUpperCase());
+        WebsiteVisibility websiteVisibilityEnum =WebsiteVisibility.valueOf(websiteVisibility.toUpperCase());
+
         String token=authHeader.substring(7);
         Long employeeId=jwtUtil.extractUserId(token);
         String employeeRole=jwtUtil.extractUserRole(token);
 //        if(employeeRole.equals(E))
         Employee employee=employeeRepo.findById(employeeId).orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
-        return vehicleRepository.findByInspectionStatus(inspectionStatusEnum);
+        return vehicleRepository.findByInspectionStatus(inspectionStatusEnum,vehicleAvailabilityEnum,websiteVisibilityEnum);
     }
 
 }

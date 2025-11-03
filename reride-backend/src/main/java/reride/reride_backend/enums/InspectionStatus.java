@@ -4,5 +4,6 @@ public enum InspectionStatus {
     PROCESSING,
     ACCEPT,
     RESCHEDULE,
-    SUBMIT
+    SUBMIT,
+    COMPLETED
 }

@@ -37,6 +37,26 @@ public class VehicleController {
     private ObjectMapper objectMapper;
 
 
+    @PostMapping(value = "/website/addVehicle", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> addVehicleFromWebsite(
+            @RequestPart("vehicle") String vehicleJson,
+            @RequestPart("user") String userJson,
+            @RequestPart("inspection") String inspectionJson,
+            @RequestPart(value = "documents", required = false) MultipartFile[] documents
+    ) throws IOException {
+
+        System.out.println("Website form submission received");
+
+        Vehicle vehicle = objectMapper.readValue(vehicleJson, Vehicle.class);
+        User user = objectMapper.readValue(userJson, User.class);
+        Inspection inspection = objectMapper.readValue(inspectionJson, Inspection.class);
+
+        vehicleService.addVehicleFromWebsite(vehicle, user, inspection, documents);
+        return ResponseEntity.ok("Vehicle submitted successfully from website");
+    }
+
+
+
     @PostMapping(value = "/addVehicle", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> addVehicleWithImg(
             @RequestPart("vehicle") String vehicleJson,
@@ -93,9 +113,9 @@ public class VehicleController {
 
 
     //to fetch vehicle details based inspection status
-    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}")
-    public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatus(@RequestHeader("Authorization") String authHeader,@PathVariable String inspectionStatus) {
-        List<Vehicle> vehicles = vehicleService.getVehiclesByInspectionStatus(authHeader,inspectionStatus);
+    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}/{vehicleAvailability}/{websiteVisibility}")
+    public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatus(@RequestHeader("Authorization") String authHeader,@PathVariable String inspectionStatus,@PathVariable String vehicleAvailability,@PathVariable String  websiteVisibility) {
+        List<Vehicle> vehicles = vehicleService.getVehiclesByInspectionStatus(authHeader,inspectionStatus,vehicleAvailability,websiteVisibility);
         return ResponseEntity.ok(vehicles);
     }
 

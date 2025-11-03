@@ -78,6 +78,7 @@ public class EmployeeController {
     }
 
 
+
     //Super admin can update admin
     //Admin can update both admin and staff
     @PutMapping("/updateEmployee/{employeeId}")

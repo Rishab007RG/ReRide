@@ -17,6 +17,8 @@ public class Vehicle {
     @Column(nullable = false)
     private String vehicleModel;
     @Column(nullable = false)
+    private String vehicleType;//[BIKE,SCOOTER]
+    @Column(nullable = false)
     private String vehicleModelYear;
     @Column(nullable = false)
     private String vehicleColour;
@@ -30,8 +32,10 @@ public class Vehicle {
     private String vehicleRegisterNumber;
 
     private String vehicleImage;
+
     @Column(nullable = false)
     private String vehicleInspectionBranch;
+
     @Column(nullable = false)
     private LocalDate vehicleInspectionDate;
 
@@ -46,6 +50,11 @@ public class Vehicle {
     @OneToOne
     @JoinColumn(name = "inspection_id",referencedColumnName = "inspectionId")
     private Inspection inspection;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_id",nullable = true)  //<- make it false after adding the super admin
+    private Branch branch;
+
 
 //private String vehicleBoughtPrice;//future
 
@@ -96,6 +105,14 @@ public class Vehicle {
 
     public void setVehicleModel(String vehicleModel) {
         this.vehicleModel = vehicleModel;
+    }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
 
     public String getVehicleModelYear() {
@@ -240,6 +257,14 @@ public class Vehicle {
 
     public void setWebsiteVisibility(WebsiteVisibility websiteVisibility) {
         this.websiteVisibility = websiteVisibility;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 }
 

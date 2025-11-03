@@ -35,6 +35,8 @@ public class InspectionService {
     }
 
     public List<Inspection> getAllInspections() {
+        Inspection insp=new Inspection();
+        System.out.println("Inspection: "+insp.getVehicles().getBranch().getBranchId());
         return inspectionRepo.findAll();
     }
 
