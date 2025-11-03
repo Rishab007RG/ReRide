@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("vehicle")
+@RequestMapping("/vehicle")
 @CrossOrigin(origins = {"http://localhost:5501", "http://127.0.0.1:5501"})
 
 public class VehicleController {
@@ -149,10 +149,19 @@ public class VehicleController {
     }
 
 
-    //to fetch vehicle details based inspection status
-    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}")
-    public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatus(@RequestHeader("Authorization") String authHeader,@PathVariable String inspectionStatus) {
-        List<Vehicle> vehicles = vehicleService.getVehiclesByInspectionStatus(authHeader,inspectionStatus);
+    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}/{vehicleAvailability}/{websiteVisibility}")
+    public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatusAvailabilityVisibility(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String inspectionStatus,
+            @PathVariable String vehicleAvailability,
+            @PathVariable String websiteVisibility
+    ) {
+        List<Vehicle> vehicles = vehicleService.getVehiclesByInspectionStatusAvailabilityVisibility(
+                authHeader,
+                inspectionStatus,
+                vehicleAvailability,
+                websiteVisibility
+        );
         return ResponseEntity.ok(vehicles);
     }
 

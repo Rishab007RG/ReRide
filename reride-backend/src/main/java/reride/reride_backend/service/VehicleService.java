@@ -401,15 +401,25 @@ public class VehicleService {
         }
     }
 
-    public List<Vehicle> getVehiclesByInspectionStatus(String authHeader,String inspectionStatus) {
-        InspectionStatus inspectionStatusEnum=InspectionStatus.valueOf(inspectionStatus.toUpperCase());
-        String token=authHeader.substring(7);
-        Long employeeId=jwtUtil.extractUserId(token);
-        String employeeRole=jwtUtil.extractUserRole(token);
-        System.out.println("Vehicle inspection status service");
-//        if(employeeRole.equals(E))
-//        Employee employee=employeeRepo.findById(employeeId).orElseThrow(()->new RuntimeException("Employee doesn't exist with ID: "+employeeId));
-        return vehicleRepository.findByInspectionStatus(inspectionStatusEnum);
+    public List<Vehicle> getVehiclesByInspectionStatusAvailabilityVisibility(
+            String authHeader,
+            String inspectionStatus,
+            String vehicleAvailability,
+            String websiteVisibility
+    ) {
+        InspectionStatus inspectionStatusEnum = InspectionStatus.valueOf(inspectionStatus.toUpperCase());
+        VehicleAvailability vehicleAvailabilityEnum = VehicleAvailability.valueOf(vehicleAvailability.toUpperCase());
+        WebsiteVisibility websiteVisibilityEnum = WebsiteVisibility.valueOf(websiteVisibility.toUpperCase());
+
+        String token = authHeader.substring(7);
+        Long employeeId = jwtUtil.extractUserId(token);
+        String employeeRole = jwtUtil.extractUserRole(token);
+
+        return vehicleRepository.findByInspectionStatusAvailabilityAndVisibility(
+                inspectionStatusEnum,
+                vehicleAvailabilityEnum,
+                websiteVisibilityEnum
+        );
     }
 
 }

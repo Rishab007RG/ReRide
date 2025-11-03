@@ -14,8 +14,17 @@ import java.util.Optional;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle,Long> {
-    @Query("SELECT v FROM Vehicle v WHERE v.inspection.inspectionStatus = :status")
-    List<Vehicle> findByInspectionStatus(@Param("status") InspectionStatus status);
+    @Query("""
+SELECT v FROM Vehicle v
+WHERE v.inspection.inspectionStatus = :inspectionStatus
+AND v.vehicleAvailability = :vehicleAvailability
+AND v.websiteVisibility = :websiteVisibility
+""")
+    List<Vehicle> findByInspectionStatusAvailabilityAndVisibility(
+            @Param("inspectionStatus") InspectionStatus inspectionStatus,
+            @Param("vehicleAvailability") VehicleAvailability vehicleAvailability,
+            @Param("websiteVisibility") WebsiteVisibility websiteVisibility
+    );
 
     @Query("SELECT v FROM Vehicle v WHERE "
             + "(:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch) AND "
