@@ -223,7 +223,8 @@ public class VehicleService {
                 v.getVehicleImage(),
                 v.getVehicleInspectionBranch(),
                 v.getVehicleMileage(),
-                v.getVehicleOutLetPrice()
+                v.getVehicleOutLetPrice(),
+                v.getBranchId()
         )).toList();
     }
 
@@ -240,7 +241,8 @@ public class VehicleService {
                 v.getVehicleImage(),
                 v.getVehicleInspectionBranch(),
                 v.getVehicleMileage(),
-                v.getVehicleOutLetPrice()
+                v.getVehicleOutLetPrice(),
+                v.getBranchId()
         );
     }
 

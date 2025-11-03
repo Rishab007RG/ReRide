@@ -14,11 +14,12 @@ public class VehicleDTO {
     private String vehicleInspectionBranch;
     private String vehicleMileage;
     private String vehicleOutLetPrice;
+    private Long branchId;
 
     public VehicleDTO(Long vehicleId, String vehicleBrand, String vehicleModel, String vehicleType,
                       String vehicleModelYear, String vehicleColour, String vehicleOwnerType,
                       String vehicleRegisterNumber, String vehicleImage,
-                      String vehicleInspectionBranch, String vehicleMileage, String vehicleOutLetPrice) {
+                      String vehicleInspectionBranch, String vehicleMileage, String vehicleOutLetPrice,Long branchId) {
         this.vehicleId = vehicleId;
         this.vehicleBrand = vehicleBrand;
         this.vehicleModel = vehicleModel;
@@ -31,6 +32,7 @@ public class VehicleDTO {
         this.vehicleInspectionBranch = vehicleInspectionBranch;
         this.vehicleMileage = vehicleMileage;
         this.vehicleOutLetPrice = vehicleOutLetPrice;
+        this.branchId=branchId;
     }
 
     public Long getVehicleId() {
@@ -127,5 +129,13 @@ public class VehicleDTO {
 
     public void setVehicleOutLetPrice(String vehicleOutLetPrice) {
         this.vehicleOutLetPrice = vehicleOutLetPrice;
+    }
+
+    public Long getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(Long branchId) {
+        this.branchId = branchId;
     }
 }

@@ -32,6 +32,7 @@ public class TestRide {
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
+
     public Long getTestRideId() {
         return testRideId;
     }

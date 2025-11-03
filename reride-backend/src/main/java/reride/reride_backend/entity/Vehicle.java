@@ -64,6 +64,12 @@ public class Vehicle {
     private String customerPhNo;
     private String documentsGiven; //(yes/no)
 
+//    @ManyToOne
+//    @JoinColumn(name = "branch_id",nullable = true)  //<- make it false after adding the super admin
+//    private Branch branch;
+    @Column(nullable = false)
+    private Long branchId;
+
     public Inspection getInspection() {
         return inspection;
     }
@@ -270,5 +276,22 @@ public class Vehicle {
 
     public void setSubmittedAt(LocalDate submittedAt) {
         this.submittedAt = submittedAt;
+    }
+
+
+//    public Branch getBranch() {
+//        return branch;
+//    }
+//
+//    public void setBranch(Branch branch) {
+//        this.branch = branch;
+//    }
+
+    public Long getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(Long branchId) {
+        this.branchId = branchId;
     }
 }

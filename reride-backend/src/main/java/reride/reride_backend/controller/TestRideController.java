@@ -1,6 +1,7 @@
 package reride.reride_backend.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reride.reride_backend.entity.TestRide;
@@ -15,6 +16,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class TestRideController {
 
+    @Autowired
     private TestRideService testRideService;
 
     // Customer books a test ride
@@ -48,4 +50,5 @@ public class TestRideController {
             @PathVariable TestRideStatus testRideStatus) {
         return ResponseEntity.ok(testRideService.getTestRidesByStatus(authHeader, testRideStatus));
     }
+
 }
