@@ -31,14 +31,19 @@ AND v.vehicleAvailability = :vehicleAvailability""")
             @Param("inspectionStatus") InspectionStatus inspectionStatus
     );
 
-    @Query("SELECT v FROM Vehicle v WHERE "
-            + "(:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch) AND "
-            + "(:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand) AND "
-            + "(:vehicleModel IS NULL OR v.vehicleModel = :vehicleModel) AND "
-            + "(:vehicleType IS NULL OR v.vehicleType = :vehicleType) AND "
-            + "(:vehicleModelYear IS NULL OR v.vehicleModelYear = :vehicleModelYear) AND "
-            + "(:vehicleMileage IS NULL OR v.vehicleMileage = :vehicleMileage) AND "
-            + "(:vehicleOutLetPrice IS NULL OR v.vehicleOutLetPrice = :vehicleOutLetPrice)")
+    @Query("""
+       SELECT v FROM Vehicle v 
+       WHERE (:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch)
+       AND (:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand)
+       AND (:vehicleModel IS NULL OR v.vehicleModel = :vehicleModel)
+       AND (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
+       AND (:vehicleModelYear IS NULL OR v.vehicleModelYear = :vehicleModelYear)
+       AND (:vehicleMileage IS NULL OR v.vehicleMileage = :vehicleMileage)
+       AND (:vehicleOutLetPrice IS NULL OR v.vehicleOutLetPrice = :vehicleOutLetPrice)
+       AND v.websiteVisibility = 'VISIBLE'
+       AND v.vehicleAvailability = 'NOT_SOLD'
+       """
+    )
     List<Vehicle> searchVehicles(
             @Param("vehicleInspectionBranch") String vehicleInspectionBranch,
             @Param("vehicleBrand") String vehicleBrand,

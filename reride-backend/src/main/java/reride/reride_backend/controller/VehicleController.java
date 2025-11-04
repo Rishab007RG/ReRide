@@ -161,6 +161,7 @@ public class VehicleController {
     }
 
 
+
     @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}/{vehicleAvailability}")
     public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatusAvailability(
             @RequestHeader("Authorization") String authHeader,
