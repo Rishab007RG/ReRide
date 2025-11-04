@@ -403,24 +403,21 @@ public class VehicleService {
         }
     }
 
-    public List<Vehicle> getVehiclesByInspectionStatusAvailabilityVisibility(
+    public List<Vehicle> getVehiclesByInspectionStatusAvailability(
             String authHeader,
             String inspectionStatus,
-            String vehicleAvailability,
-            String websiteVisibility
+            String vehicleAvailability
     ) {
         InspectionStatus inspectionStatusEnum = InspectionStatus.valueOf(inspectionStatus.toUpperCase());
         VehicleAvailability vehicleAvailabilityEnum = VehicleAvailability.valueOf(vehicleAvailability.toUpperCase());
-        WebsiteVisibility websiteVisibilityEnum = WebsiteVisibility.valueOf(websiteVisibility.toUpperCase());
 
         String token = authHeader.substring(7);
         Long employeeId = jwtUtil.extractUserId(token);
         String employeeRole = jwtUtil.extractUserRole(token);
 
-        return vehicleRepository.findByInspectionStatusAvailabilityAndVisibility(
+        return vehicleRepository.findByInspectionStatusAvailability(
                 inspectionStatusEnum,
-                vehicleAvailabilityEnum,
-                websiteVisibilityEnum
+                vehicleAvailabilityEnum
         );
     }
 

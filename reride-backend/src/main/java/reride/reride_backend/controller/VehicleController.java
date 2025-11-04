@@ -149,18 +149,14 @@ public class VehicleController {
     }
 
 
-    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}/{vehicleAvailability}/{websiteVisibility}")
-    public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatusAvailabilityVisibility(
+    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}")
+    public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatusAvailability(
             @RequestHeader("Authorization") String authHeader,
-            @PathVariable String inspectionStatus,
-            @PathVariable String vehicleAvailability,
-            @PathVariable String websiteVisibility
+            @PathVariable String inspectionStatus
     ) {
-        List<Vehicle> vehicles = vehicleService.getVehiclesByInspectionStatusAvailabilityVisibility(
+        List<Vehicle> vehicles = vehicleService.getVehiclesByInspectionStatusAvailability(
                 authHeader,
-                inspectionStatus,
-                vehicleAvailability,
-                websiteVisibility
+                inspectionStatus
         );
         return ResponseEntity.ok(vehicles);
     }

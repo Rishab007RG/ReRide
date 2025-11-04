@@ -17,13 +17,11 @@ public interface VehicleRepository extends JpaRepository<Vehicle,Long> {
     @Query("""
 SELECT v FROM Vehicle v
 WHERE v.inspection.inspectionStatus = :inspectionStatus
-AND v.vehicleAvailability = :vehicleAvailability
-AND v.websiteVisibility = :websiteVisibility
-""")
-    List<Vehicle> findByInspectionStatusAvailabilityAndVisibility(
+AND v.vehicleAvailability = :vehicleAvailability""")
+    List<Vehicle> findByInspectionStatusAvailability(
             @Param("inspectionStatus") InspectionStatus inspectionStatus,
-            @Param("vehicleAvailability") VehicleAvailability vehicleAvailability,
-            @Param("websiteVisibility") WebsiteVisibility websiteVisibility
+            @Param("vehicleAvailability") VehicleAvailability vehicleAvailability
+
     );
 
     @Query("SELECT v FROM Vehicle v WHERE "
