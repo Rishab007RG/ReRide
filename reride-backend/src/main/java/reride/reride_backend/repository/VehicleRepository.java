@@ -37,9 +37,9 @@ AND v.vehicleAvailability = :vehicleAvailability""")
        AND (:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand)
        AND (:vehicleModel IS NULL OR v.vehicleModel = :vehicleModel)
        AND (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
-       AND (:vehicleModelYear IS NULL OR v.vehicleModelYear = :vehicleModelYear)
-       AND (:vehicleMileage IS NULL OR v.vehicleMileage = :vehicleMileage)
-       AND (:vehicleOutLetPrice IS NULL OR v.vehicleOutLetPrice = :vehicleOutLetPrice)
+       AND (:vehicleModelYear IS NULL OR v.vehicleModelYear >= :vehicleModelYear)
+       AND (:vehicleMileage IS NULL OR v.vehicleMileage >= :vehicleMileage)
+       AND (:vehicleOutLetPrice IS NULL OR v.vehicleOutLetPrice <= :vehicleOutLetPrice)
        AND v.websiteVisibility = 'VISIBLE'
        AND v.vehicleAvailability = 'NOT_SOLD'
        """
