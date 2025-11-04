@@ -148,6 +148,18 @@ public class VehicleController {
         return ResponseEntity.ok("Vehicle details updated successfully");
     }
 
+    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}")
+    public ResponseEntity<List<Vehicle>> findByInspectionStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String inspectionStatus
+    ) {
+        List<Vehicle> vehicles = vehicleService.findByInspectionStatus(
+                authHeader,
+                inspectionStatus
+        );
+        return ResponseEntity.ok(vehicles);
+    }
+
 
     @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}/{vehicleAvailability}")
     public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatusAvailability(

@@ -24,6 +24,13 @@ AND v.vehicleAvailability = :vehicleAvailability""")
 
     );
 
+    @Query("""
+    SELECT v FROM Vehicle v
+    WHERE v.inspection.inspectionStatus = :inspectionStatus""")
+    List<Vehicle> findByInspectionStatus(
+            @Param("inspectionStatus") InspectionStatus inspectionStatus
+    );
+
     @Query("SELECT v FROM Vehicle v WHERE "
             + "(:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch) AND "
             + "(:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand) AND "
