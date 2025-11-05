@@ -191,6 +191,7 @@ public class VehicleService {
     }
 
     public List<Vehicle> searchVehicles(
+            Long branchId,
             String vehicleInspectionBranch,
             String vehicleBrand,
             String vehicleModel,
@@ -199,7 +200,9 @@ public class VehicleService {
             String vehicleMileage,
             String vehicleOutLetPrice
     ) {
+        System.out.println("here: "+branchId);
         return vehicleRepository.searchVehicles(
+                branchId,
                 vehicleInspectionBranch,
                 vehicleBrand,
                 vehicleModel,

@@ -101,6 +101,7 @@ public class VehicleController {
 
     @GetMapping("/website/getVehicles/search")
     public ResponseEntity<List<VehicleDTO>> searchVehicles(
+            @RequestParam(required = false) Long branchId,
             @RequestParam(required = false) String vehicleInspectionBranch,
             @RequestParam(required = false) String vehicleBrand,
             @RequestParam(required = false) String vehicleModel,
@@ -110,6 +111,7 @@ public class VehicleController {
             @RequestParam(required = false) String vehicleOutLetPrice
     ) {
         List<Vehicle> vehicles = vehicleService.searchVehicles(
+                branchId,
                 vehicleInspectionBranch,
                 vehicleBrand,
                 vehicleModel,

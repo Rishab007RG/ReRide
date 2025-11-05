@@ -30,21 +30,22 @@ AND v.vehicleAvailability = :vehicleAvailability""")
     List<Vehicle> findByInspectionStatus(
             @Param("inspectionStatus") InspectionStatus inspectionStatus
     );
-
     @Query("""
-       SELECT v FROM Vehicle v 
-       WHERE (:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch)
-       AND (:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand)
-       AND (:vehicleModel IS NULL OR v.vehicleModel = :vehicleModel)
-       AND (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
-       AND (:vehicleModelYear IS NULL OR v.vehicleModelYear >= :vehicleModelYear)
-       AND (:vehicleMileage IS NULL OR v.vehicleMileage >= :vehicleMileage)
-       AND (:vehicleOutLetPrice IS NULL OR v.vehicleOutLetPrice <= :vehicleOutLetPrice)
-       AND v.websiteVisibility = 'VISIBLE'
-       AND v.vehicleAvailability = 'NOT_SOLD'
-       """
-    )
+   SELECT v FROM Vehicle v 
+   WHERE (:branchId IS NULL OR v.branchId = :branchId)
+   AND (:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch)
+   AND (:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand)
+   AND (:vehicleModel IS NULL OR v.vehicleModel = :vehicleModel)
+   AND (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
+   AND (:vehicleModelYear IS NULL OR v.vehicleModelYear >= :vehicleModelYear)
+   AND (:vehicleMileage IS NULL OR v.vehicleMileage >= :vehicleMileage)
+   AND (:vehicleOutLetPrice IS NULL OR v.vehicleOutLetPrice <= :vehicleOutLetPrice)
+   AND v.websiteVisibility = 'VISIBLE'
+   AND v.vehicleAvailability = 'NOT_SOLD'
+   """)
+
     List<Vehicle> searchVehicles(
+            @Param("branchId") Long branchId,
             @Param("vehicleInspectionBranch") String vehicleInspectionBranch,
             @Param("vehicleBrand") String vehicleBrand,
             @Param("vehicleModel") String vehicleModel,
