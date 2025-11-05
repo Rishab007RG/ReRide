@@ -17,23 +17,33 @@ public interface VehicleRepository extends JpaRepository<Vehicle,Long> {
     @Query("""
 SELECT v FROM Vehicle v
 WHERE v.inspection.inspectionStatus = :inspectionStatus
-AND v.vehicleAvailability = :vehicleAvailability
-AND v.websiteVisibility = :websiteVisibility
-""")
-    List<Vehicle> findByInspectionStatusAvailabilityAndVisibility(
+AND v.vehicleAvailability = :vehicleAvailability""")
+    List<Vehicle> findByInspectionStatusAvailability(
             @Param("inspectionStatus") InspectionStatus inspectionStatus,
-            @Param("vehicleAvailability") VehicleAvailability vehicleAvailability,
-            @Param("websiteVisibility") WebsiteVisibility websiteVisibility
+            @Param("vehicleAvailability") VehicleAvailability vehicleAvailability
+
     );
 
-    @Query("SELECT v FROM Vehicle v WHERE "
-            + "(:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch) AND "
-            + "(:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand) AND "
-            + "(:vehicleModel IS NULL OR v.vehicleModel = :vehicleModel) AND "
-            + "(:vehicleType IS NULL OR v.vehicleType = :vehicleType) AND "
-            + "(:vehicleModelYear IS NULL OR v.vehicleModelYear = :vehicleModelYear) AND "
-            + "(:vehicleMileage IS NULL OR v.vehicleMileage = :vehicleMileage) AND "
-            + "(:vehicleOutLetPrice IS NULL OR v.vehicleOutLetPrice = :vehicleOutLetPrice)")
+    @Query("""
+    SELECT v FROM Vehicle v
+    WHERE v.inspection.inspectionStatus = :inspectionStatus""")
+    List<Vehicle> findByInspectionStatus(
+            @Param("inspectionStatus") InspectionStatus inspectionStatus
+    );
+
+    @Query("""
+       SELECT v FROM Vehicle v 
+       WHERE (:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch)
+       AND (:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand)
+       AND (:vehicleModel IS NULL OR v.vehicleModel = :vehicleModel)
+       AND (:vehicleType IS NULL OR v.vehicleType = :vehicleType)
+       AND (:vehicleModelYear IS NULL OR v.vehicleModelYear >= :vehicleModelYear)
+       AND (:vehicleMileage IS NULL OR v.vehicleMileage >= :vehicleMileage)
+       AND (:vehicleOutLetPrice IS NULL OR v.vehicleOutLetPrice <= :vehicleOutLetPrice)
+       AND v.websiteVisibility = 'VISIBLE'
+       AND v.vehicleAvailability = 'NOT_SOLD'
+       """
+    )
     List<Vehicle> searchVehicles(
             @Param("vehicleInspectionBranch") String vehicleInspectionBranch,
             @Param("vehicleBrand") String vehicleBrand,

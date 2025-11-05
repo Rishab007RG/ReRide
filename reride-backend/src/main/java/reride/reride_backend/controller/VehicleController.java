@@ -148,19 +148,30 @@ public class VehicleController {
         return ResponseEntity.ok("Vehicle details updated successfully");
     }
 
+    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}")
+    public ResponseEntity<List<Vehicle>> findByInspectionStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String inspectionStatus
+    ) {
+        List<Vehicle> vehicles = vehicleService.findByInspectionStatus(
+                authHeader,
+                inspectionStatus
+        );
+        return ResponseEntity.ok(vehicles);
+    }
 
-    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}/{vehicleAvailability}/{websiteVisibility}")
-    public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatusAvailabilityVisibility(
+
+
+    @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}/{vehicleAvailability}")
+    public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatusAvailability(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String inspectionStatus,
-            @PathVariable String vehicleAvailability,
-            @PathVariable String websiteVisibility
+            @PathVariable String vehicleAvailability
     ) {
-        List<Vehicle> vehicles = vehicleService.getVehiclesByInspectionStatusAvailabilityVisibility(
+        List<Vehicle> vehicles = vehicleService.getVehiclesByInspectionStatusAvailability(
                 authHeader,
                 inspectionStatus,
-                vehicleAvailability,
-                websiteVisibility
+                vehicleAvailability
         );
         return ResponseEntity.ok(vehicles);
     }
