@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reride.reride_backend.component.JwtUtil;
 import reride.reride_backend.dto.BranchDTO;
+import reride.reride_backend.dto.BranchWebsiteDTO;
 import reride.reride_backend.dto.EmployeeDTO;
 import reride.reride_backend.entity.Branch;
 import reride.reride_backend.entity.Employee;
@@ -93,6 +94,32 @@ public class BranchService {
                 branch.getBranchPhNo(),
                 branch.getBranchEmail()
                 )).toList();
+
+    }
+
+    public List<BranchWebsiteDTO> getBranchesWebsite() throws AccessDeniedException {
+//        String token=authHeader.substring(7);
+//        Long employeeId=jwtUtil.extractUserId(token);
+//        String employeeRole=jwtUtil.extractUserRole(token);
+
+//        Employee employee=employeeRepo.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee Doesn't exist"));
+//        if (!("SUPER_ADMIN".equalsIgnoreCase(employeeRole))) {
+//            throw new AccessDeniedException("Access denied: Only SUPER_ADMIN can view branch list.");
+//        }
+
+        return branchRepo.findAll().stream().map(branch -> new BranchWebsiteDTO(
+                branch.getBranchId(),
+//                branch.getBranchName(),
+//                branch.getBranchAddress(),
+//                branch.getBranchCity(),
+                branch.getBranchArea()
+//                branch.getBranchPinCode(),
+//                branch.getBranchGstNo(),
+//                branch.getBranchPanNo(),
+//                branch.getBranchOwnerName(),
+//                branch.getBranchPhNo(),
+//                branch.getBranchEmail()
+        )).toList();
 
     }
 

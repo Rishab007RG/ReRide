@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reride.reride_backend.dto.BranchDTO;
+import reride.reride_backend.dto.BranchWebsiteDTO;
 import reride.reride_backend.entity.Branch;
 import reride.reride_backend.service.BranchService;
 
@@ -29,6 +30,13 @@ public class BranchController {
     @GetMapping("/getBranches")
     public ResponseEntity<List<BranchDTO>> getBranches(@RequestHeader("Authorization") String authHeader) throws AccessDeniedException {
         List<BranchDTO> branch=branchService.getBranchesService(authHeader);
+        return ResponseEntity.ok(branch);
+    }
+
+    //get branch
+    @GetMapping("/website/getBranches")
+    public ResponseEntity<List<BranchWebsiteDTO>> getBranchesWebsite() throws AccessDeniedException {
+        List<BranchWebsiteDTO> branch=branchService.getBranchesWebsite();
         return ResponseEntity.ok(branch);
     }
 //get branches by branch ID
