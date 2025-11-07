@@ -414,12 +414,17 @@ public class VehicleService {
 
         String token = authHeader.substring(7);
         Long employeeId = jwtUtil.extractUserId(token);
-        String employeeRole = jwtUtil.extractUserRole(token);
+//        String employeeRole = jwtUtil.extractUserRole(token);
 
-        return vehicleRepository.findByInspectionStatus(
-                inspectionStatusEnum
-        );
+        Employee employee = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
+
+        Long branchId = employee.getBranch().getBranchId();
+
+        // Others restricted to their branch
+        return vehicleRepository.findByInspectionStatusAndBranchId(inspectionStatusEnum, branchId);
     }
+
 
     public List<Vehicle> getVehiclesByInspectionStatusAvailability(
             String authHeader,
@@ -433,10 +438,15 @@ public class VehicleService {
         Long employeeId = jwtUtil.extractUserId(token);
         String employeeRole = jwtUtil.extractUserRole(token);
 
-        return vehicleRepository.findByInspectionStatusAvailability(
+        Employee employee = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
+
+        Long branchId = employee.getBranch().getBranchId();
+
+        return vehicleRepository.findByInspectionStatusAndVehicleAvailabilityAndBranchId(
                 inspectionStatusEnum,
-                vehicleAvailabilityEnum
+                vehicleAvailabilityEnum,
+                branchId
         );
     }
-
 }

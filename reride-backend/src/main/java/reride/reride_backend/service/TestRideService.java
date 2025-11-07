@@ -74,10 +74,14 @@ public class TestRideService {
     public List<TestRide> getTestRidesByStatus(String authHeader, TestRideStatus status) {
         String token = authHeader.substring(7);
         Long employeeId = jwtUtil.extractUserId(token);
+        String employeeRole = jwtUtil.extractUserRole(token);
 
-        employeeRepo.findById(employeeId)
+        Employee employee = employeeRepo.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
 
-        return testRideRepository.findByTestRideStatus(status);
+        Long branchId = employee.getBranch().getBranchId();
+
+        return testRideRepository.findByTestRideStatusAndVehicle_BranchId(status, branchId);
     }
+
 }

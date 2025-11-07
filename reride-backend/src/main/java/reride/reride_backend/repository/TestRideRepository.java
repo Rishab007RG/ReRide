@@ -15,4 +15,7 @@ public interface TestRideRepository extends JpaRepository<TestRide, Long> {
 
     // Fetch all test rides for a specific vehicle
     List<TestRide> findByVehicle_VehicleId(Long vehicleId);
+
+    List<TestRide> findByTestRideStatusAndVehicle_BranchId(TestRideStatus status, Long branchId);
+
 }

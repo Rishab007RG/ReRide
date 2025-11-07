@@ -31,7 +31,7 @@ AND v.vehicleAvailability = :vehicleAvailability""")
             @Param("inspectionStatus") InspectionStatus inspectionStatus
     );
     @Query("""
-   SELECT v FROM Vehicle v 
+   SELECT v FROM Vehicle v
    WHERE (:branchId IS NULL OR v.branchId = :branchId)
    AND (:vehicleInspectionBranch IS NULL OR v.vehicleInspectionBranch = :vehicleInspectionBranch)
    AND (:vehicleBrand IS NULL OR v.vehicleBrand = :vehicleBrand)
@@ -63,6 +63,19 @@ AND v.vehicleAvailability = :vehicleAvailability""")
     Optional<Vehicle> findByIdAndWebsiteVisibilityAndAvailability(@Param("vehicleId") Long vehicleId,
                                                                   @Param("visibility") WebsiteVisibility visibility,
                                                                   @Param("availability") VehicleAvailability availability);
+
+    @Query("SELECT v FROM Vehicle v WHERE v.inspection.inspectionStatus = :status AND v.branchId = :branchId")
+    List<Vehicle> findByInspectionStatusAndBranchId(
+            @Param("status") InspectionStatus status,
+            @Param("branchId") Long branchId
+    );
+
+    @Query("SELECT v FROM Vehicle v WHERE v.inspection.inspectionStatus = :status AND v.vehicleAvailability = :availability AND v.branchId = :branchId")
+    List<Vehicle> findByInspectionStatusAndVehicleAvailabilityAndBranchId(
+            @Param("status") InspectionStatus status,
+            @Param("availability") VehicleAvailability availability,
+            @Param("branchId") Long branchId
+    );
 }
 
 
