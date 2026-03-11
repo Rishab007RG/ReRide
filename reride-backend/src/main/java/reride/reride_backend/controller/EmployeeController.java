@@ -56,7 +56,7 @@ public class EmployeeController {
         return ResponseEntity.ok(employee);
     }
 
-// get Employee by emplyee ID
+    // get Employee by employee ID
     @GetMapping("/getEmployee/{employeeId}")
     public Optional<Employee> getEmployeeById(@RequestHeader("Authorization") String authHeader, @PathVariable Long employeeId) throws AccessDeniedException {
         return employeeService.getEmployeeByIdService(authHeader,employeeId);
@@ -73,8 +73,7 @@ public class EmployeeController {
     //admin can fetch both admin and staff of the particular branch
     @GetMapping("/getEmployeeByBranchId/{branchId}")
     public List<Employee> getEmployeeByBranchId(@RequestHeader("Authorization") String authHeader,@PathVariable Long branchId) throws AccessDeniedException {
-        List<Employee> employee=employeeService.getEmployeeByBranchIdService(authHeader,branchId);
-        return employee;
+        return employeeService.getEmployeeByBranchIdService(authHeader,branchId);
     }
 
 
