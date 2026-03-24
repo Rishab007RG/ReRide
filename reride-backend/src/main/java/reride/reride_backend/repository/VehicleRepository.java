@@ -76,6 +76,12 @@ AND v.vehicleAvailability = :vehicleAvailability""")
             @Param("availability") VehicleAvailability availability,
             @Param("branchId") Long branchId
     );
+
+
+    List<Vehicle> findTop5ByWebsiteVisibilityAndVehicleAvailabilityOrderByVehicleInspectionDateDesc(
+            WebsiteVisibility websiteVisibility,
+            VehicleAvailability vehicleAvailability
+    );
 }
 
 

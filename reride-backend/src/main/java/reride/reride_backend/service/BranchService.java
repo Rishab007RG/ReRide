@@ -128,7 +128,7 @@ public class BranchService {
         String token=authHeader.substring(7);
         Long employeeIdByToken=jwtUtil.extractUserId(token);
         String employeeRole=jwtUtil.extractUserRole(token);
-        System.out.println("employeeId: "+branchId +" employeeRole: "+employeeRole);
+//        System.out.println("employeeId: "+branchId +" employeeRole: "+employeeRole);
         Employee employee=employeeRepo.findById(employeeIdByToken).orElseThrow(() -> new RuntimeException("Employee Doesn't exist"));
         if (!("SUPER_ADMIN".equalsIgnoreCase(employeeRole))) {
             throw new AccessDeniedException("Access denied: Only SUPER_ADMIN view branch list.");

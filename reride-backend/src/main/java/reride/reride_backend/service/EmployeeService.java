@@ -66,7 +66,7 @@ public class EmployeeService {
         employee.setEmployeeRole(Role.STAFF);
         employee.setEmployeePassword(passwordEncoder.encode(employeeData.getEmployeePassword()));
         employee.setBranch(branch);
-        employee.setAddedById(requester);
+        employee.setAddedById(requester.getEmployeeId());
 
         return employeeRepo.save(employee);
     }
@@ -102,14 +102,13 @@ public class EmployeeService {
         employee.setEmployeeRole(Role.ADMIN);
         employee.setEmployeePassword(passwordEncoder.encode(employeeData.getEmployeePassword()));
         employee.setBranch(branch);
-        employee.setAddedById(requester);
+        employee.setAddedById(requester.getEmployeeId());
 
         return employeeRepo.save(employee);
     }
 
 
     public EmployeeDTO employeeLoginService(Employee employeeFormData) {
-//        System.out.println(employeeFormData.getEmployeeEmail());
         return employeeRepo.findByEmployeeEmail(employeeFormData.getEmployeeEmail())
                 .filter(employee -> passwordEncoder.matches(employeeFormData.getEmployeePassword(), employee.getEmployeePassword()))
                 .map(employee -> {
@@ -132,7 +131,7 @@ public class EmployeeService {
         String jwt=authHeader.substring(7);
         Long employeeId=jwtUtil.extractUserId(jwt);
         String employeeRole=jwtUtil.extractUserRole(jwt);
-        System.out.println("employeeId: "+employeeId +" employeeRole: "+employeeRole);
+
         if (!("ADMIN".equalsIgnoreCase(employeeRole))) {
             throw new AccessDeniedException("Access denied: Only SUPER_ADMIN and ADMIN can view employee list.");
         }
@@ -153,7 +152,7 @@ public class EmployeeService {
         String jwt=authHeader.substring(7);
         Long employeeIdByToken=jwtUtil.extractUserId(jwt);
         String employeeRole=jwtUtil.extractUserRole(jwt);
-        System.out.println("employeeId: "+employeeId +" employeeRole: "+employeeRole);
+
         Employee employee=employeeRepo.findById(employeeIdByToken).orElseThrow(() -> new RuntimeException("Employee Doesn't exist"));
         if (!("SUPER_ADMIN".equalsIgnoreCase(employeeRole) || "ADMIN".equalsIgnoreCase(employeeRole))) {
             throw new AccessDeniedException("Access denied: Only SUPER_ADMIN and ADMIN can view employee list.");
@@ -165,7 +164,7 @@ public class EmployeeService {
         String jwt=authHeader.substring(7);
         Long employeeId=jwtUtil.extractUserId(jwt);
         String employeeRole=jwtUtil.extractUserRole(jwt);
-        System.out.println("employeeId: "+employeeId +" employeeRole: "+employeeRole);
+
         Employee employee = employeeRepo.findById(employeeId)
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
 

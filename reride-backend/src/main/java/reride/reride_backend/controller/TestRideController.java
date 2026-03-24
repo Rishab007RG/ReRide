@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reride.reride_backend.dto.TestRideRequestDTO;
 import reride.reride_backend.entity.TestRide;
 import reride.reride_backend.enums.TestRideStatus;
 import reride.reride_backend.service.TestRideService;
@@ -21,7 +22,8 @@ public class TestRideController {
 
     // Customer books a test ride
     @PostMapping("/bookTestRide")
-    public ResponseEntity<TestRide> bookTestRide(@RequestBody TestRide testRide) {
+    public ResponseEntity<TestRide> bookTestRide(@RequestBody TestRideRequestDTO testRide) {
+
         return ResponseEntity.ok(testRideService.bookTestRide(testRide));
     }
 

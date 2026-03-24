@@ -18,7 +18,6 @@ public class EmployeeController {
     @Autowired
     EmployeeService employeeService;
 
-
     @PostMapping("/login")
     public ResponseEntity<EmployeeDTO> employeeLoginController(@RequestBody Employee employeeFormData){
         EmployeeDTO response=employeeService.employeeLoginService(employeeFormData);
@@ -75,7 +74,6 @@ public class EmployeeController {
     public List<Employee> getEmployeeByBranchId(@RequestHeader("Authorization") String authHeader,@PathVariable Long branchId) throws AccessDeniedException {
         return employeeService.getEmployeeByBranchIdService(authHeader,branchId);
     }
-
 
 
     //Super admin can update admin

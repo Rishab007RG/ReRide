@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reride.reride_backend.dto.VehicleDTO;
@@ -20,10 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/vehicle")
-@CrossOrigin(origins = {"http://localhost:5501", "http://127.0.0.1:5501"})
-
 public class VehicleController {
-
 
     @Autowired
     private VehicleService vehicleService;
@@ -45,7 +43,7 @@ public class VehicleController {
             @RequestPart(value = "documents", required = false) MultipartFile[] documents
     ) throws IOException {
 
-        System.out.println("Website form submission received");
+//        System.out.println("Website form submission received");
 
         Vehicle vehicle = objectMapper.readValue(vehicleJson, Vehicle.class);
         User user = objectMapper.readValue(userJson, User.class);
@@ -60,10 +58,8 @@ public class VehicleController {
             @RequestPart("vehicle") String vehicleJson,
             @RequestPart("user") String userJson,
             @RequestPart("inspection") String inspectionJson,
-
             @RequestPart(value = "documents", required = false) MultipartFile[] documents
     ) throws IOException {
-        System.out.println("here in controller");
         Vehicle vehicle = objectMapper.readValue(vehicleJson, Vehicle.class);
         User user = objectMapper.readValue(userJson, User.class);
         Inspection inspection = objectMapper.readValue(inspectionJson, Inspection.class);
@@ -137,7 +133,7 @@ public class VehicleController {
             @RequestPart(value = "documents", required = false) MultipartFile[] documents
     ) throws IOException {
 
-        System.out.println("Inside VehicleController → updateVehicleWithImg()");
+//        System.out.println("Inside VehicleController → updateVehicleWithImg()");
 
         // Convert incoming JSON strings to Java objects
         Vehicle vehicle = objectMapper.readValue(vehicleJson, Vehicle.class);
@@ -150,6 +146,7 @@ public class VehicleController {
         return ResponseEntity.ok("Vehicle details updated successfully");
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}")
     public ResponseEntity<List<Vehicle>> findByInspectionStatus(
             @RequestHeader("Authorization") String authHeader,
@@ -161,8 +158,6 @@ public class VehicleController {
         );
         return ResponseEntity.ok(vehicles);
     }
-
-
 
     @GetMapping("/getVehiclesByInspectionStatus/{inspectionStatus}/{vehicleAvailability}")
     public ResponseEntity<List<Vehicle>> getVehiclesByInspectionStatusAvailability(
@@ -178,5 +173,12 @@ public class VehicleController {
         return ResponseEntity.ok(vehicles);
     }
 
+
+    @GetMapping("/website/latest")
+    public ResponseEntity<List<VehicleDTO>> getLatestVehicles() {
+        List<Vehicle> vehicles= vehicleService.getLatestVehicles();
+        List<VehicleDTO> vehicleDto = vehicleService.mapToVehicleDtoList(vehicles);
+        return ResponseEntity.ok(vehicleDto);
+    }
 
 }

@@ -1,29 +1,42 @@
 package reride.reride_backend.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 import reride.reride_backend.component.JwtUtil;
 import reride.reride_backend.entity.Employee;
 import reride.reride_backend.entity.Inspection;
+import reride.reride_backend.entity.Vehicle;
 import reride.reride_backend.enums.InspectionStatus;
-import reride.reride_backend.enums.Role;
+import reride.reride_backend.enums.WebsiteVisibility;
 import reride.reride_backend.repository.EmployeeRepo;
 import reride.reride_backend.repository.InspectionRepo;
+import reride.reride_backend.repository.VehicleRepository;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class InspectionService {
 
     @Autowired
-    InspectionRepo inspectionRepo;
+    private InspectionRepo inspectionRepo;
 
     @Autowired
     JwtUtil jwtUtil;
 
     @Autowired
-    EmployeeRepo employeeRepo;
+    private EmployeeRepo employeeRepo;
+
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
     public Inspection addInspection(Inspection inspection){
         return inspectionRepo.save(inspection);
@@ -112,6 +125,73 @@ public class InspectionService {
         InspectionStatus inspectionStatusEnum=InspectionStatus.valueOf(inspectionStatus.toUpperCase());
         Inspection inspection=inspectionRepo.getInspectionDetailsByIdandStatus(inspectionId,inspectionStatusEnum);
         return inspection;
+    }
+
+
+//
+    private static final String UPLOAD_DIR = "uploads/";
+
+    public Vehicle updateVehicleDetails(
+            Long vehicleId,
+            String outletPrice,
+            String mileage,
+            WebsiteVisibility visibility,
+            MultipartFile[] images,
+            String authHeader
+    ) throws JsonProcessingException {
+
+        String token=authHeader.substring(7);
+        Long employeeId=jwtUtil.extractUserId(token);
+        String employeeRole=jwtUtil.extractUserRole(token);
+
+        if (!"ADMIN".equals(employeeRole)) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        if (outletPrice != null) {
+            vehicle.setVehicleOutLetPrice(outletPrice);
+        }
+
+        if (mileage != null) {
+            vehicle.setVehicleMileage(mileage);
+        }
+
+        if (visibility != null) {
+            vehicle.setWebsiteVisibility(visibility);
+        }
+
+        if (images != null && images.length > 0) {
+
+            List<String> imagePaths = new ArrayList<>();
+
+            for (MultipartFile image : images) {
+
+                try {
+
+                    String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                    Path uploadPath = Paths.get(UPLOAD_DIR);
+
+                    if (!Files.exists(uploadPath)) {
+                        Files.createDirectories(uploadPath);
+                    }
+
+                    Path filePath = uploadPath.resolve(fileName);
+                    Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                    imagePaths.add(fileName);
+
+                } catch (IOException e) {
+                    throw new RuntimeException("Image upload failed");
+                }
+            }
+
+            vehicle.setVehicleImage(new ObjectMapper().writeValueAsString(imagePaths));
+        }
+
+        return vehicleRepository.save(vehicle);
     }
 }
 

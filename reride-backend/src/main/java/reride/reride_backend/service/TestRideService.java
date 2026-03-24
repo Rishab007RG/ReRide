@@ -1,43 +1,54 @@
 package reride.reride_backend.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reride.reride_backend.component.JwtUtil;
+import reride.reride_backend.dto.TestRideRequestDTO;
+import reride.reride_backend.entity.Branch;
 import reride.reride_backend.entity.Employee;
 import reride.reride_backend.entity.TestRide;
 import reride.reride_backend.entity.Vehicle;
 import reride.reride_backend.enums.TestRideStatus;
-import reride.reride_backend.repository.EmployeeRepo;
-import reride.reride_backend.repository.InspectionRepo;
-import reride.reride_backend.repository.TestRideRepository;
-import reride.reride_backend.repository.VehicleRepository;
+import reride.reride_backend.repository.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TestRideService {
 
     @Autowired
-    TestRideRepository testRideRepository;
+    private TestRideRepository testRideRepository;
 
     @Autowired
-    VehicleRepository vehicleRepo;
+    private VehicleRepository vehicleRepo;
 
     @Autowired
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
     @Autowired
-    EmployeeRepo employeeRepo;
+    private EmployeeRepo employeeRepo;
+
+    @Autowired
+    private BranchRepo branchRepo;
 
     // Customer books a test ride
-    public TestRide bookTestRide(TestRide testRide) {
-        Vehicle vehicle = vehicleRepo.findById(testRide.getVehicle().getVehicleId())
+    public TestRide bookTestRide(TestRideRequestDTO request) {
+        Vehicle vehicle = vehicleRepo.findById(request.getVehicle().getVehicleId())
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
-        testRide.setVehicle(vehicle);
-        testRide.setTestRideStatus(TestRideStatus.REQUESTED);
-        return testRideRepository.save(testRide);
+
+        Branch branch = branchRepo.findById(request.getBranchId())
+                .orElseThrow(() -> new RuntimeException("Branch not found"));
+
+        TestRide testride = new TestRide();
+        testride.setTestRideCustomerName(request.getTestRideCustomerName());
+        testride.setTestRideCustomerEmail(request.getTestRideCustomerEmail());
+        testride.setTestRideDate(request.getTestRideDate());
+        testride.setTestRideTime(request.getTestRideTime());
+        testride.setBranch(branch);
+        testride.setVehicle(vehicle);
+        testride.setTestRideStatus(TestRideStatus.REQUESTED);
+
+        return testRideRepository.save(testride);
     }
 
     // Staff updates status (accept/reschedule)

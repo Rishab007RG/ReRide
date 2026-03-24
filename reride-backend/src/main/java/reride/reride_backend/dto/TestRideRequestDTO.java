@@ -1,18 +1,13 @@
-package reride.reride_backend.entity;
+package reride.reride_backend.dto;
 
-import jakarta.persistence.*;
-import lombok.*;
-import reride.reride_backend.enums.TestRideStatus;
+import lombok.Data;
+import reride.reride_backend.entity.Vehicle;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
-public class TestRide {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long testRideId;
+@Data
+public class TestRideRequestDTO {
 
     private String testRideCustomerName;
 
@@ -24,26 +19,10 @@ public class TestRide {
 
     private LocalTime testRideTime;
 
-    @ManyToOne
-    @JoinColumn(name = "branchId")
-    private Branch branch;
+    private Long branchId;
 
-    @Enumerated(EnumType.STRING)
-    private TestRideStatus testRideStatus = TestRideStatus.REQUESTED;
-
-    // Optional: link this test ride to a specific vehicle
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
-
-    public Long getTestRideId() {
-        return testRideId;
-    }
-
-    public void setTestRideId(Long testRideId) {
-        this.testRideId = testRideId;
-    }
 
     public String getTestRideCustomerName() {
         return testRideCustomerName;
@@ -85,12 +64,12 @@ public class TestRide {
         this.testRideTime = testRideTime;
     }
 
-    public TestRideStatus getTestRideStatus() {
-        return testRideStatus;
+    public Long getBranchId() {
+        return branchId;
     }
 
-    public void setTestRideStatus(TestRideStatus testRideStatus) {
-        this.testRideStatus = testRideStatus;
+    public void setBranchId(Long branchId) {
+        this.branchId = branchId;
     }
 
     public Vehicle getVehicle() {
@@ -99,13 +78,5 @@ public class TestRide {
 
     public void setVehicle(Vehicle vehicle) {
         this.vehicle = vehicle;
-    }
-
-    public Branch getBranch() {
-        return branch;
-    }
-
-    public void setBranch(Branch branch) {
-        this.branch = branch;
     }
 }

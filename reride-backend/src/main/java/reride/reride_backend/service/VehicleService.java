@@ -449,4 +449,13 @@ public class VehicleService {
                 branchId
         );
     }
+
+    //for home page
+    public List<Vehicle> getLatestVehicles() {
+        return vehicleRepository
+                .findTop5ByWebsiteVisibilityAndVehicleAvailabilityOrderByVehicleInspectionDateDesc(
+                        WebsiteVisibility.VISIBLE,
+                        VehicleAvailability.NOT_SOLD
+                );
+    }
 }

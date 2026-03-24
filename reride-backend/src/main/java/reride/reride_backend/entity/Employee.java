@@ -30,8 +30,11 @@ public class Employee {
     @Column(nullable = false)
     private Role employeeRole;
 
-    @ManyToOne
-    private Employee addedById;
+//    @ManyToOne
+//    private Employee addedById;
+
+    @Column(name = "added_by_id_employee_id")
+    private Long addedById;
 
     @ManyToOne
     @JoinColumn(name = "branch_id",nullable = true)  //<- make it false after adding the super admin
@@ -85,11 +88,11 @@ public class Employee {
         this.employeeRole = employeeRole;
     }
 
-    public Employee getAddedById() {
+    public Long getAddedById() {
         return addedById;
     }
 
-    public void setAddedById(Employee addedById) {
+    public void setAddedById(Long addedById) {
         this.addedById = addedById;
     }
 

@@ -13,10 +13,10 @@ public class EmployeeDTO {
     private String employeePhNo;
     private String employeeEmail;
     private Role employeeRole;
-    private Employee addedById;
+    private Long addedById;
     private Branch branch;
 
-    public EmployeeDTO(String token, Long employeeId, String employeeName, String employeePhNo, String employeeEmail, Role employeeRole, Employee addedById,Branch branch) {
+    public EmployeeDTO(String token, Long employeeId, String employeeName, String employeePhNo, String employeeEmail, Role employeeRole, Long addedById, Branch branch) {
         this.token = token;
         this.employeeId = employeeId;
         this.employeeName = employeeName;
@@ -75,11 +75,11 @@ public class EmployeeDTO {
         this.employeeRole = employeeRole;
     }
 
-    public Employee getAddedById() {
+    public Long getAddedById() {
         return addedById;
     }
 
-    public void setAddedById(Employee addedById) {
+    public void setAddedById(Long addedById) {
         this.addedById = addedById;
     }
 

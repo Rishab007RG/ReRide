@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,7 +51,8 @@ public class SecurityConfiguration {
                                 "/vehicle/website/getVehicles",
                                 "/vehicle/website/getVehicle/**",
                                 "/testRide/bookTestRide",
-                                "/branch/website/getBranches"
+                                "/branch/website/getBranches",
+                                "/vehicle/website/latest"
                         ).permitAll()
                         .requestMatchers("/employee/**").hasAnyRole("SUPER_ADMIN", "ADMIN", "STAFF")
                         .anyRequest().authenticated()
@@ -79,10 +81,11 @@ public class SecurityConfiguration {
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "http://127.0.0.1:5501",
-                "http://187.127.128.158"
+                "http://187.127.128.158",
+                "http://127.0.0.1"
         ));
 
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
